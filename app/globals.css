@@ -520,7 +520,7 @@
 
   /* At rest each sketch shows its finished frame. The loops only run while the card is
      hovered, focused, or (on phones, where nothing hovers) on screen. */
-  .card:not(:hover):not(:focus-within):not(.inview) .stage * {
+  .card:not(:hover):not(:focus-within):not(.inview) .stage *:not(.finale, .finale *) {
     animation: none;
   }
 
@@ -954,6 +954,61 @@
     padding: 0 18px;
     cursor: pointer;
   }
+  .finale {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--line);
+  }
+  .finale .fix {
+    width: 64px;
+    height: 64px;
+    flex: none;
+    overflow: visible;
+  }
+  .finale .bit {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: fall 0.9s calc(0.35s + var(--i) * 45ms) cubic-bezier(0.5, 0, 0.9, 0.6) both;
+  }
+  @keyframes fall {
+    to {
+      transform: translate(calc(var(--x) * 0.6px), 22px) rotate(140deg);
+      opacity: 0;
+    }
+  }
+  .won p {
+    font-weight: 500;
+    font-size: 16px;
+    animation: rise 0.4s 1s both;
+  }
+  .won ul {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .won li svg {
+    width: 26px;
+    height: 26px;
+    display: block;
+  }
+  .won li {
+    animation: pop 0.45s calc(1.25s + var(--i) * 180ms) both cubic-bezier(0.2, 0.9, 0.3, 1.6);
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.3);
+    }
+  }
   .pips {
     display: flex;
     gap: 5px;
@@ -1384,6 +1439,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .finale .bit {
+    opacity: 0;
+  }
   *,
   *::before,
   *::after {

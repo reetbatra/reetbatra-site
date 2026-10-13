@@ -119,7 +119,7 @@ export const SITES: Record<SiteId, Site> = {
       ["I find what breaks for developers, and fix it upstream: a red error in the quickstart, a repro anyone can run, the fix merged, and docs that match the code."],
       [
         "before this, ",
-        { text: "four years in developer relations", href: DEVREL_YEARS },
+        { text: "three years in developer relations", href: DEVREL_YEARS },
         ": 4,800+ developers taught in person across 11 events. now I build ",
         { text: "docsParity", href: "https://docsparity.vercel.app" },
         ", which catches docs drift before your users do.",
@@ -159,7 +159,7 @@ export const SITES: Record<SiteId, Site> = {
         ", where Indian speech recognition actually works, and a streaming fix in ",
         { text: PR.sarvamSdk.label, href: PR.sarvamSdk.href },
         ". before that, ",
-        { text: "four years in developer relations", href: DEVREL_YEARS },
+        { text: "three years in developer relations", href: DEVREL_YEARS },
         ".",
       ],
     ],
@@ -255,7 +255,9 @@ export const WORK: WorkItem[] = [
   { kind: "pr", date: "2025-04-18", when: "apr 2025", title: "starknet-io/starknet-docs#1572", what: "A Windows install guide for the official docs.", href: "https://github.com/starknet-io/starknet-docs/pull/1572", status: "merged", on: ["devrel"] },
 
   // before
-  { kind: "role", date: "2022-08", when: "2022 to 2025", title: "four years in developer relations", what: "StarkWare, DablClub, ZKX. 4,800+ developers taught in person across 11 events, 12+ tutorials in official docs, and a video series at 4K to 8K views an episode.", href: "https://www.linkedin.com/in/reet-batra/", status: "past" },
+  { kind: "role", date: "2025", when: "2025", title: "developer relations at StarkWare", what: "Across all three devrel roles: 4,800+ developers taught in person at 11 events, 12+ tutorials in official docs, and a video series at 4K to 8K views an episode.", href: "https://www.linkedin.com/in/reet-batra/", status: "past" },
+  { kind: "role", date: "2024", when: "2024", title: "developer relations at DablClub", what: "Developer relations.", href: "https://www.linkedin.com/in/reet-batra/", status: "past" },
+  { kind: "role", date: "2023", when: "2023", title: "developer relations at ZKX", what: "Developer relations.", href: "https://www.linkedin.com/in/reet-batra/", status: "past" },
 ];
 
 export type PostTopic = "building" | "devrel" | "protocols";
@@ -342,41 +344,60 @@ export function postsFor(site: SiteId): Post[] {
   );
 }
 
-const TIMELINE_KINDS: Record<SiteId, WorkKind[]> = {
-  home: ["product", "role"],
-  devrel: ["pr", "report", "product", "role"],
-  fde: ["product", "pr", "role"],
+type Activity = "building" | "oss" | "role";
+
+const ACTIVITY_OF: Record<WorkKind, Activity> = { product: "building", pr: "oss", report: "oss", role: "role" };
+
+const ACTIVITY_LABEL: Record<Exclude<Activity, "role">, string> = {
+  building: "shipping and building",
+  oss: "contributing to open source",
 };
 
-function timelineLine(w: WorkItem): Rich {
-  const link = { text: w.title, href: w.href };
-  switch (w.kind) {
-    case "product":
-      return [w.status === "repo" ? "built " : "shipped ", link];
-    case "pr":
-      return ["merged ", link];
-    case "report":
-      return ["reported ", link, ", fixed by the maintainers"];
-    case "role":
-      return [link];
-  }
-}
+/** What each page's "so far" shows, in order inside a year. Home is products only. */
+const TIMELINE_ORDER: Record<SiteId, Activity[]> = {
+  home: ["building", "role"],
+  devrel: ["oss", "building", "role"],
+  fde: ["building", "oss", "role"],
+};
 
-/** The year-by-year list on the front page: one short line per thing, newest first. */
+/** Examples per line before it says "and N more". */
+export const TIMELINE_EXAMPLES = 3;
+
+/**
+ * The year-by-year list on the front page. Each year gets one line per kind of work with a few
+ * examples ("shipping and building: AskTota, Blunt, Nudge and 4 more"), and each role its own line.
+ */
 export function timelineFor(site: SiteId): { year: string; rows: { key: string; line: Rich }[] }[] {
-  const kinds = TIMELINE_KINDS[site];
-  const items = WORK.filter((w) => kinds.includes(w.kind) && (!w.on || w.on.includes(site))).sort((a, b) =>
-    b.date.localeCompare(a.date),
+  const order = TIMELINE_ORDER[site];
+  const items = WORK.filter((w) => order.includes(ACTIVITY_OF[w.kind]) && (!w.on || w.on.includes(site))).sort(
+    (a, b) =>
+      Number(!!b.featured) - Number(!!a.featured) ||
+      Number(a.kind === "report") - Number(b.kind === "report") || // merged PRs make better examples
+      b.date.localeCompare(a.date),
   );
-  const years: { year: string; rows: { key: string; line: Rich }[] }[] = [];
-  for (const w of items) {
-    const year = w.date.slice(0, 4);
-    const row = { key: w.href, line: timelineLine(w) };
-    const last = years.at(-1);
-    if (last && last.year === year) last.rows.push(row);
-    else years.push({ year, rows: [row] });
-  }
-  return years;
+  const years = [...new Set(items.map((w) => w.date.slice(0, 4)))].sort().reverse();
+  return years.map((year) => {
+    const inYear = items.filter((w) => w.date.startsWith(year));
+    const rows: { key: string; line: Rich }[] = [];
+    for (const act of order) {
+      const these = inYear.filter((w) => ACTIVITY_OF[w.kind] === act);
+      if (!these.length) continue;
+      if (act === "role") {
+        for (const w of these) rows.push({ key: `${year} ${w.title}`, line: [{ text: w.title, href: w.href }] });
+        continue;
+      }
+      const shown = these.slice(0, TIMELINE_EXAMPLES);
+      const line: Rich = [`${ACTIVITY_LABEL[act]}: `];
+      shown.forEach((w, i) => {
+        if (i > 0) line.push(i === shown.length - 1 && these.length <= TIMELINE_EXAMPLES ? " and " : ", ");
+        line.push({ text: w.title, href: w.href });
+      });
+      const more = these.length - shown.length;
+      if (more > 0) line.push(" and ", { text: `${more} more`, href: "/work" });
+      rows.push({ key: `${year} ${act}`, line });
+    }
+    return { year, rows };
+  });
 }
 
 /** A workshop card: a product, a fix shown as a diff, or the drift game. */

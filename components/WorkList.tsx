@@ -19,7 +19,7 @@ export default function WorkList({ items }: { items: WorkItem[] }) {
           <span className="year">{y.year}</span>
           <ul>
             {y.rows.map((w) => (
-              <li key={w.href} id={w.id}>
+              <li key={`${w.date} ${w.title}`} id={w.id}>
                 <a href={w.href} target="_blank" rel="noopener noreferrer" className="w-row">
                   <span className="w-title">
                     {w.glyph && <Glyph name={w.glyph} className="mini" />}

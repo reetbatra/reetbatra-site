@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { DIFFS, DRIFT_ROUNDS, MIND, PERSON, POSTS, postsFor, roman, SITES, timelineFor, WORK, workFor, workshopFor } from "./content.ts";
+import { DIFFS, DRIFT_ROUNDS, MIND, PERSON, POSTS, postsFor, roman, SITES, TIMELINE_EXAMPLES, timelineFor, WORK, workFor, workshopFor } from "./content.ts";
 import { GLYPHS } from "./glyphs.ts";
 import { SITE_IDS } from "./sites.ts";
 
@@ -96,7 +96,24 @@ test("the timeline is newest year first and home only lists products and past ro
     assert.deepEqual(years, [...years].sort().reverse(), id);
   }
   const home = JSON.stringify(timelineFor("home"));
-  assert.doesNotMatch(home, /merged |reported /);
+  assert.doesNotMatch(home, /open source/);
+});
+
+test("the timeline sums each year up with a few examples, and roles get their own line", () => {
+  for (const id of SITE_IDS) {
+    for (const y of timelineFor(id)) {
+      for (const r of y.rows) {
+        const links = r.line.filter((p) => typeof p !== "string" && p.href !== "/work");
+        assert.ok(links.length >= 1 && links.length <= TIMELINE_EXAMPLES, `${id} ${y.year}: ${JSON.stringify(r.line)}`);
+      }
+    }
+  }
+  const y2026 = timelineFor("devrel")[0];
+  assert.equal(y2026.year, "2026");
+  assert.match(JSON.stringify(y2026.rows[0].line), /contributing to open source/);
+  const roles = timelineFor("home").flatMap((y) => y.rows.map((r) => [y.year, JSON.stringify(r.line)]));
+  for (const [year, who] of [["2025", "StarkWare"], ["2024", "DablClub"], ["2023", "ZKX"]])
+    assert.ok(roles.some(([y, l]) => y === year && l.includes(who)), `${year} ${who}`);
 });
 
 test("roman numerals", () => {
