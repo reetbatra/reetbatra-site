@@ -138,8 +138,8 @@
     position: relative;
     min-height: 100svh;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto 1fr auto;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-rows: auto 1fr;
     /* Room at the bottom for the "play this" button in the corner. */
     padding: 28px 32px 84px;
     gap: 24px 16px;
@@ -152,29 +152,22 @@
     text-align: right;
     justify-self: end;
   }
-  .corner.bl {
-    align-self: end;
-    max-width: 30ch;
-    font-size: 15px;
-  }
-  .corner.br {
-    align-self: end;
-    justify-self: end;
+  .corner.tc {
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: 2px 14px;
+    justify-content: center;
+    gap: 2px 18px;
   }
-  .corner.br a {
+  .corner.tc a {
     text-decoration: none;
     color: var(--mute);
     text-transform: uppercase;
     letter-spacing: 0.06em;
     font-size: 12px;
     display: inline-block;
-    padding: 8px 0;
+    padding: 2px 0 10px;
   }
-  .corner.br a:hover {
+  .corner.tc a:hover {
     color: var(--ink);
   }
   .who {
@@ -1634,13 +1627,16 @@
     .hovering {
       display: none;
     }
-    .corner.bl {
-      grid-column: 1 / -1;
+    .cover {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto 1fr;
     }
-    .corner.br {
+    /* On a phone the links get their own row under the name and the role. */
+    .corner.tc {
       grid-column: 1 / -1;
-      justify-self: start;
+      grid-row: 2;
       justify-content: flex-start;
+      gap: 2px 16px;
     }
     .column,
     .sec.wide {

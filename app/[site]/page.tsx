@@ -24,7 +24,6 @@ export default async function Home({ params }: { params: Promise<{ site: string 
           tagline={s.tagline}
           role={s.role}
           city={PERSON.city}
-          motto={s.motto}
           objects={s.objects}
           links={links}
         />

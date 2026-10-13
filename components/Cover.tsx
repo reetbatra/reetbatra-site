@@ -22,7 +22,8 @@ function go(id: string) {
 }
 
 /**
- * The first screen: four corners of small print and my name across the middle, split by the
+ * The first screen: small print across the top (who, where to find me, what I do) and my name
+ * across the middle, split by the
  * things I made. Hover an object to read what it is; click it to jump to it.
  */
 export default function Cover({
@@ -31,7 +32,6 @@ export default function Cover({
   tagline,
   role,
   city,
-  motto,
   objects,
   links,
 }: {
@@ -40,7 +40,6 @@ export default function Cover({
   tagline: string;
   role: string;
   city: string;
-  motto: string;
   objects: CoverObject[];
   links: Link[];
 }) {
@@ -54,6 +53,16 @@ export default function Cover({
         </h1>
         <p className="mute">{tagline}</p>
       </div>
+
+      <ul className="corner tc">
+        {links.map((l) => (
+          <li key={l.label}>
+            <a href={l.href} {...ext(l.href)}>
+              {l.label}
+            </a>
+          </li>
+        ))}
+      </ul>
 
       <div className="corner tr">
         <p>{role}</p>
@@ -95,17 +104,6 @@ export default function Cover({
         {hover ?? " "}
       </p>
 
-      <p className="corner bl">{motto}</p>
-
-      <ul className="corner br">
-        {links.map((l) => (
-          <li key={l.label}>
-            <a href={l.href} {...ext(l.href)}>
-              {l.label}
-            </a>
-          </li>
-        ))}
-      </ul>
     </section>
   );
 }
