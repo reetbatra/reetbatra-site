@@ -5,7 +5,7 @@ export const SITE_IDS = ["home", "devrel", "fde"] as const;
 export type SiteId = (typeof SITE_IDS)[number];
 
 export const PRODUCTION_ORIGIN: Record<SiteId, string> = {
-  home: "https://reetbatra.com",
+  home: "https://www.reetbatra.com", // reetbatra.com 308s to www
   devrel: "https://devrel.reetbatra.com",
   fde: "https://fde.reetbatra.com",
 };
