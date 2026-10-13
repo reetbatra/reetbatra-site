@@ -1,6 +1,6 @@
 "use client";
 
-import { ascii, asciiRows, dither, sharpen, toLuma, type Ink, type Luma } from "@/lib/portrait";
+import { ascii, asciiRows, engrave, sharpen, toLuma, type Ink, type Luma } from "@/lib/portrait";
 
 const SRC = "/portrait.png";
 let loading: Promise<HTMLImageElement> | null = null;
@@ -39,24 +39,53 @@ function sample(img: HTMLImageElement, w: number, h: number, src?: Rect): Luma {
 
 const cssVar = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
-/** Draws the portrait as a 1-bit dither with blocks of `scale` canvas pixels. */
-export function drawDither(canvas: HTMLCanvasElement, img: HTMLImageElement, scale: number, ink: Ink) {
+/** Luminance of the portrait at `w`x`h`, cached per size: hovering redraws every frame. */
+const lumaCache = new Map<string, Luma>();
+export function portraitLuma(img: HTMLImageElement, w: number, h: number): Luma {
+  const key = `${w}x${h}`;
+  let l = lumaCache.get(key);
+  if (!l) {
+    l = sample(img, w, h);
+    lumaCache.set(key, l);
+  }
+  return l;
+}
+
+/**
+ * Draws the portrait as a copperplate engraving. `progress` (0..1) prints it top to bottom,
+ * the way a plate comes off the press; `phase` ripples the lines.
+ */
+export function drawEngraving(
+  canvas: HTMLCanvasElement,
+  luma: Luma,
+  ink: Ink,
+  { progress = 1, phase = 0 }: { progress?: number; phase?: number } = {},
+) {
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("portrait: 2d canvas unavailable");
-  const W = canvas.width;
-  const H = canvas.height;
-  const w = Math.max(1, Math.round(W / scale));
-  const h = Math.max(1, Math.round(H / scale));
-  const bits = dither(sample(img, w, h), ink);
-  ctx.fillStyle = cssVar("--bg");
-  ctx.fillRect(0, 0, W, H);
+  const sx = canvas.width / luma.w;
+  const sy = canvas.height / luma.h;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.setTransform(sx, 0, 0, sy, 0, 0);
   ctx.fillStyle = cssVar("--ink");
-  const cw = W / w;
-  const ch = H / h;
-  for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) {
-      if (bits[y * w + x]) ctx.fillRect(Math.floor(x * cw), Math.floor(y * ch), Math.ceil(cw), Math.ceil(ch));
+  const cut = luma.h * progress;
+  for (const stroke of engrave(luma, ink, { phase })) {
+    // Each stroke is a ribbon: walk out along the top edge, back along the bottom.
+    const pts = progress < 1 ? stroke.filter((p) => p[1] <= cut) : stroke;
+    if (pts.length < 2) continue;
+    ctx.beginPath();
+    for (let i = 0; i < pts.length; i++) {
+      const [x, y, half] = pts[i];
+      if (i === 0) ctx.moveTo(x, y - half);
+      else ctx.lineTo(x, y - half);
     }
+    for (let i = pts.length - 1; i >= 0; i--) {
+      const [x, y, half] = pts[i];
+      ctx.lineTo(x, y + half);
+    }
+    ctx.closePath();
+    ctx.fill();
   }
 }
 

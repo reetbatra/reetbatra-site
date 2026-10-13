@@ -2,8 +2,6 @@
 
 // Keys are handled in one place (Chrome) and the page parts listen for what they care about.
 type Events = {
-  "mind:more": undefined;
-  "drag:step": 1 | -1;
   "egg:open": undefined;
 };
 

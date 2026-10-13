@@ -1,9 +1,12 @@
 import type { Viewport } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import { Geist, Geist_Mono, Newsreader } from "next/font/google";
 import "./globals.css";
 
-const mono = IBM_Plex_Mono({ variable: "--font-mono", subsets: ["latin"], weight: ["400", "500", "600"] });
-const sans = IBM_Plex_Sans({ variable: "--font-sans", subsets: ["latin"], weight: ["400", "500", "600"] });
+// Geist for everything you read, Geist Mono for dates and code, and Newsreader italic for the
+// few bookish touches (captions, the contents page).
+const sans = Geist({ variable: "--font-sans", subsets: ["latin"] });
+const mono = Geist_Mono({ variable: "--font-mono", subsets: ["latin"] });
+const serif = Newsreader({ variable: "--font-serif", subsets: ["latin"], style: ["italic"], weight: ["400"] });
 
 export const viewport: Viewport = {
   themeColor: [
@@ -17,7 +20,7 @@ const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem("theme");if(t==
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${mono.variable} ${sans.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${sans.variable} ${mono.variable} ${serif.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>

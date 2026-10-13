@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { DRIFT_ROUNDS, MIND, PERSON, POSTS, postsFor, SITES, WORK, workFor } from "./content.ts";
+import { DIFFS, DRIFT_ROUNDS, MIND, PERSON, POSTS, postsFor, roman, SITES, timelineFor, WORK, workFor, workshopFor } from "./content.ts";
+import { GLYPHS } from "./glyphs.ts";
 import { SITE_IDS } from "./sites.ts";
 
 const everyString = (value: unknown): string[] =>
@@ -12,7 +13,7 @@ const everyString = (value: unknown): string[] =>
         ? Object.values(value).flatMap(everyString)
         : [];
 
-const ALL = { SITES, MIND, WORK, POSTS, DRIFT_ROUNDS, PERSON };
+const ALL = { SITES, MIND, WORK, POSTS, DRIFT_ROUNDS, PERSON, DIFFS };
 
 test("no em dashes or en dashes anywhere in the copy", () => {
   const bad = everyString(ALL).filter((s) => /[—–]/.test(s));
@@ -39,7 +40,7 @@ test("no page links to another of the three pages", () => {
 test("Web3 never leads a page", () => {
   for (const id of SITE_IDS) {
     const s = SITES[id];
-    const head = [s.title, s.description, s.tagline, s.motto].join(" ").toLowerCase();
+    const head = [s.title, s.description, s.tagline, s.motto, s.role, JSON.stringify(s.intro[0])].join(" ").toLowerCase();
     assert.doesNotMatch(head, /starknet|cairo|web3|zk|blockchain|crypto/, id);
     assert.notEqual(workFor(id)[0].kind, "role", `${id} work page leads with old roles`);
     assert.notEqual(postsFor(id)[0].topic, "protocols", `${id} writing leads with protocols`);
@@ -51,7 +52,8 @@ test("home is products only, no hiring ask, no resume", () => {
   assert.equal(SITES.home.resume, false);
   assert.equal(workFor("home")[0].title, "AskTota");
   assert.match(SITES.home.tagline, /builder at heart/);
-  assert.equal(SITES.home.from + SITES.home.to, "01");
+  assert.match(SITES.home.motto, /0 to 1/);
+  assert.ok(workshopFor("home").every((c) => c.type === "product"), "home workshop is products only");
 });
 
 test("devrel leads with merged PRs, fde with what was built", () => {
@@ -59,12 +61,47 @@ test("devrel leads with merged PRs, fde with what was built", () => {
   assert.equal(workFor("fde")[0].kind, "product");
 });
 
-test("every drag stage after the first carries a receipt, and every page has five stops", () => {
+test("every cover object is a real glyph that points at something on the page", () => {
   for (const id of SITE_IDS) {
-    const stages = SITES[id].stages;
-    assert.equal(stages.length, 5, id);
-    stages.slice(1).forEach((st, i) => assert.ok(st.receipt, `${id} stage ${i + 1} has no receipt`));
+    const s = SITES[id];
+    assert.ok(s.objects.length >= 5 && s.objects.length <= 7, `${id} has ${s.objects.length} objects`);
+    const targets = new Set([...s.workshop, "timeline", "notes"]);
+    for (const o of s.objects) {
+      assert.ok(o.glyph in GLYPHS, `${id}: ${o.glyph}`);
+      assert.ok(targets.has(o.to), `${id}: ${o.label} points at missing #${o.to}`);
+    }
   }
+});
+
+test("every workshop card resolves, once, and the game is only where it's switched on", () => {
+  for (const id of SITE_IDS) {
+    const cards = workshopFor(id);
+    assert.equal(new Set(SITES[id].workshop).size, cards.length, `${id} repeats a card`);
+    assert.equal(cards.some((c) => c.type === "drift"), SITES[id].game, id);
+    for (const c of cards) if (c.type === "product") assert.ok(!c.item.on || c.item.on.includes(id), `${id}: ${c.item.title}`);
+  }
+});
+
+test("every diff is a real change from a merged PR", () => {
+  for (const d of DIFFS) {
+    assert.notEqual(d.before, d.after, d.id);
+    assert.equal(d.pr.state, "merged");
+    assert.match(d.pr.href, /^https:\/\/github\.com\/.+\/pull\/\d+$/);
+  }
+});
+
+test("the timeline is newest year first and home only lists products and past roles", () => {
+  for (const id of SITE_IDS) {
+    const years = timelineFor(id).map((y) => y.year);
+    assert.deepEqual(years, [...years].sort().reverse(), id);
+  }
+  const home = JSON.stringify(timelineFor("home"));
+  assert.doesNotMatch(home, /merged |reported /);
+});
+
+test("roman numerals", () => {
+  assert.deepEqual([1, 4, 9, 12, 40].map(roman), ["i", "iv", "ix", "xii", "xl"]);
+  assert.throws(() => roman(0), /out of range/);
 });
 
 test("work items are newest first inside each group", () => {

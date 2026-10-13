@@ -1,16 +1,15 @@
 import Link from "next/link";
 import { PERSON } from "@/lib/content";
 
-/** Header for the work and writing pages: the name goes home, nothing else. */
+/** Header for the work and writing pages: corners like the cover, then the title. */
 export default function SubHead({ title, lede }: { title: string; lede: string }) {
   return (
-    <header>
-      <div className="sub-head">
-        <Link href="/" className="name small">
+    <header className="sub">
+      <div className="sub-corners">
+        <Link href="/" className="who">
           {PERSON.name}
-          <span className="caret" aria-hidden="true" />
         </Link>
-        <Link href="/" className="back">
+        <Link href="/" className="mute">
           ← back
         </Link>
       </div>

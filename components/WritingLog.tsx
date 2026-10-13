@@ -1,42 +1,31 @@
-"use client";
+import { roman, type Post } from "@/lib/content";
 
-import { useState } from "react";
-import type { Post } from "@/lib/content";
-
-/** Titles on the left. Hover or focus one and its first lines show alongside. */
+/** A contents page: numeral, title, a dotted leader, and the date where a page number would be. */
 export default function WritingLog({ posts }: { posts: Post[] }) {
-  const [active, setActive] = useState(0);
-  const p = posts[active];
-
   return (
-    <div className="log">
-      <ul className="rows">
-        {posts.map((post, i) => {
-          const body = (
-            <>
-              <span className="r-when">{post.when}</span>
-              <span className="r-title">{post.title}</span>
-              <span className={`chip${post.draft ? " draft" : ""}`}>{post.draft ? "draft" : "read"}</span>
-              <span className="brief-inline">{post.brief}</span>
-            </>
-          );
-          return (
-            <li key={post.title} onPointerEnter={() => setActive(i)} aria-current={i === active ? "true" : undefined}>
-              {post.href ? (
-                <a href={post.href} target="_blank" rel="noopener noreferrer" onFocus={() => setActive(i)}>
-                  {body}
-                </a>
-              ) : (
-                <div>{body}</div>
-              )}
-            </li>
-          );
-        })}
-      </ul>
-      <aside className="preview" aria-live="polite">
-        <div className="p-when">{p.draft ? "draft, coming soon" : p.when}</div>
-        <p>{p.brief}</p>
-      </aside>
-    </div>
+    <ol className="contents">
+      {posts.map((p, i) => {
+        const row = (
+          <>
+            <span className="c-num">{roman(i + 1)}.</span>
+            <span className="c-title">{p.title}</span>
+            <span className="c-dots" aria-hidden="true" />
+            <span className="c-when">{p.draft ? "soon" : p.when}</span>
+            <span className="c-brief">{p.brief}</span>
+          </>
+        );
+        return (
+          <li key={p.title} className={p.draft ? "draft" : undefined}>
+            {p.href ? (
+              <a href={p.href} target="_blank" rel="noopener noreferrer">
+                {row}
+              </a>
+            ) : (
+              <div>{row}</div>
+            )}
+          </li>
+        );
+      })}
+    </ol>
   );
 }

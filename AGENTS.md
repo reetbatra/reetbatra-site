@@ -5,18 +5,21 @@ Reet decides who sees which page by which link she sends. **The three pages neve
 
 | Host | Page | Leads with |
 | --- | --- | --- |
-| reetbatra.com, www., anything else | `home` | "builder at heart", 0 to 1 through products. No hiring ask, no resume. |
-| devrel.* or `*-devrel.vercel.app` | `devrel` | err to ok through merged PRs. Resume, spot the drift. |
-| fde.* or `*-fde.vercel.app` | `fde` | demo to prod through builds and fixes. Resume, spot the drift. |
+| reetbatra.com, www., anything else | `home` | "builder at heart", products. No hiring ask, no resume. |
+| devrel.* or `*-devrel.vercel.app` | `devrel` | merged PRs as diffs, spot the drift. Resume. |
+| fde.* or `*-fde.vercel.app` | `fde` | builds and fixes, spot the drift. Resume. |
+
+# The design (v3, 2026-10-14)
+A blend of portfolios Reet likes, copying none: a cover with small print in four corners and the name split by pixel objects (melike turgut), an engraved frontispiece portrait and a contents page with dotted leaders (danielwhite.uk), a narrow column with the year in the gutter (bobby.so), a "currently" card, notes rows and the time in Bengaluru in the footer (abhisekmishra.com), and a workshop grid of small live sketches (sanyam.sh/lab). It replaced the krinza.me-style drag hero, `tail -f mind` and `?` keys menu on purpose; don't bring those back. Geist + Geist Mono, Newsreader italic for captions only.
 
 Locally: `npm run dev`, then open localhost:3000, devrel.localhost:3000 and fde.localhost:3000 (Chrome resolves `*.localhost` by itself).
 
 # Where things are
-- `lib/content.ts`: every word and link on the site. Edit this to change copy.
-- `lib/sites.ts`: host to page mapping. `lib/portrait.ts`: dither, ASCII and sharpen math (pure, tested).
-- `components/Name.tsx`: the name and the portrait that develops on hover (tap on phones; a mouse click opens the big one).
-- `components/Chrome.tsx`: footer, every keyboard shortcut, the lights, popovers, the press-p ASCII portrait.
-- `components/Drag.tsx`, `Mind.tsx`, `DriftGame.tsx`, `WorkList.tsx`, `WritingLog.tsx`.
+- `lib/content.ts`: every word and link on the site, the cover objects, the workshop order, the diffs. Edit this to change copy.
+- `lib/glyphs.ts`: the 12x12 pixel objects (hand drawn, tested). `lib/portrait.ts`: engraving, ASCII and sharpen math (pure, tested).
+- `lib/security-headers.ts`: CSP, HSTS and friends, wired in `next.config.ts` (tested).
+- `components/Cover.tsx` (first screen), `Plate.tsx` (engraved portrait, prints on scroll, ripples on hover, click opens the ASCII one), `Sections.tsx` (intro, currently, timeline, notes), `Workshop.tsx` + `Demos.tsx` (the live sketches), `Chrome.tsx` (footer, keys t/p/d, the parrot, the press-p portrait), `DriftGame.tsx`, `WorkList.tsx`, `WritingLog.tsx`.
+- Sketch animations only run while a card is hovered, focused or (phones) on screen; at rest each shows its finished frame.
 - `scripts/make-assets.mjs` builds the favicon, home-screen icon and `public/portrait.png` from `assets-src/`. Run `npm run assets` after changing a source photo. The portrait cutout came from macOS Vision via `assets-src/lift.swift`.
 
 # Rules
@@ -24,7 +27,7 @@ Locally: `npm run dev`, then open localhost:3000, devrel.localhost:3000 and fde.
 - Every number links to something a stranger can check. No percentage improvement claims (resume metric policy). `lib/content.test.ts` enforces both.
 - AI first. Web3 work is history and never leads a page; the tests check titles, the first work row and the first post.
 - No colour anywhere. Status is fill (merged, fixed), outline (live, repo), dashes (draft) or grey (past).
-- `MIND` lines are dated to the day the thing happened and link to it when there's a link.
+- `MIND` (the notes list) lines are dated to the day the thing happened and link to it when there's a link.
 - AskTota is never marketed as "AI-powered".
 - Site-wide CSS resets live in `@layer base` in `app/globals.css`. Preflight strips link underlines, so base `a` puts them back; block links set `text-decoration: none` themselves.
 

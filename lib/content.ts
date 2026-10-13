@@ -5,6 +5,7 @@
 // - No em dashes. AI first; Web3 work is history, never the headline.
 // - The three pages never link to each other.
 
+import type { GlyphName } from "./glyphs.ts";
 import type { SiteId } from "./sites.ts";
 
 export interface Receipt {
@@ -14,9 +15,14 @@ export interface Receipt {
   href: string;
 }
 
-export interface Stage {
-  text: string;
-  receipt?: Receipt;
+/** A sentence with links in it: plain strings and linked runs, in order. */
+export type Rich = (string | { text: string; href: string })[];
+
+/** One of the little pixel objects on the cover. `to` is a workshop card id or a section id. */
+export interface CoverObject {
+  glyph: GlyphName;
+  label: string;
+  to: string;
 }
 
 export interface Site {
@@ -24,14 +30,22 @@ export interface Site {
   /** <title> and the OG card. */
   title: string;
   description: string;
+  /** Top left of the cover, under the name. */
   tagline: string;
+  /** Top right of the cover. */
+  role: string;
+  /** Bottom left of the cover, two or three short lines. */
   motto: string;
-  /** "I take products from" [from] → [to] */
-  lead: string;
-  from: string;
-  to: string;
-  stages: Stage[];
-  nav: { href: string; label: string; hint: string; external?: boolean }[];
+  /** The paragraphs beside the engraved portrait. */
+  intro: Rich[];
+  /** Between "reet" and "batra" on the cover. */
+  objects: CoverObject[];
+  /** The "currently" card. */
+  currently: { label: string; text: string; href?: string }[];
+  /** Workshop card ids, in order. Each is a WORK item's `id`, a diff, or "drift". */
+  workshop: string[];
+  /** The line under "work" on /work. */
+  workLede: string;
   /** The one ask on the page. Home has none on purpose. */
   ask?: { text: string; href: string };
   resume: boolean;
@@ -40,7 +54,10 @@ export interface Site {
 
 export const PERSON = {
   name: "reet batra",
-  photoCaption: "eth india, bangalore",
+  first: "reet",
+  last: "batra",
+  city: "bengaluru",
+  photoCaption: "the author, on stage at eth india.",
   links: [
     { label: "github", href: "https://github.com/reetbatra" },
     { label: "x", href: "https://x.com/reet_batra" },
@@ -57,27 +74,37 @@ const PR = {
   zcashFactCheck: { label: "zcashlabs/zcash-skills#4", state: "merged", href: "https://github.com/zcashlabs/zcash-skills/pull/4" },
 } satisfies Record<string, Receipt>;
 
+const ASKTOTA = "https://www.asktota.com";
+const DEVREL_YEARS = "https://www.linkedin.com/in/reet-batra/";
+
 export const SITES: Record<SiteId, Site> = {
   home: {
     id: "home",
     title: "reet batra",
-    description: "Builder at heart. I take products from 0 to 1. Bangalore.",
+    description: "Builder at heart. I take products from 0 to 1. Bengaluru.",
     tagline: "builder at heart.",
+    role: "product, 0 to 1",
     motto: "product, 0 to 1. currently building AskTota.",
-    lead: "I take products from",
-    from: "0",
-    to: "1",
-    stages: [
-      { text: "a problem that annoys me" },
-      { text: "a repo the same night", receipt: { label: "github.com/reetbatra", state: "repos", href: "https://github.com/reetbatra?tab=repositories" } },
-      { text: "deployed, a little ugly", receipt: { label: "docsparity.vercel.app", state: "live", href: "https://docsparity.vercel.app" } },
-      { text: "a stranger uses it", receipt: { label: "AskTota", state: "on google play", href: "https://play.google.com/store/apps/details?id=app.asktota" } },
-      { text: "a product people use", receipt: { label: "everything I've shipped", state: "→", href: "/work" } },
+    intro: [
+      ["builder at heart. I take products from 0 to 1: a problem that annoys me, a repo the same night, deployed a little ugly, and then a stranger uses it."],
+      ["currently building ", { text: "AskTota", href: ASKTOTA }, ", real Vedic astrology written like your group chat. I run product, the app, brand and growth."],
     ],
-    nav: [
-      { href: "/work", label: "work", hint: "products" },
-      { href: "/writing", label: "writing", hint: "notes" },
+    objects: [
+      { glyph: "parrot", label: "AskTota", to: "asktota" },
+      { glyph: "heart", label: "bestie, don't.", to: "bestie" },
+      { glyph: "neq", label: "docsParity", to: "docsparity" },
+      { glyph: "mic", label: "Blunt", to: "blunt" },
+      { glyph: "dumbbell", label: "Muscle Mommy", to: "musclemommy" },
+      { glyph: "bell", label: "Nudge", to: "nudge" },
+      { glyph: "hook", label: "hook-catch", to: "hookcatch" },
     ],
+    currently: [
+      { label: "building", text: "AskTota", href: ASKTOTA },
+      { label: "writing", text: "the agent that catches docs drift" },
+      { label: "last fix", text: PR.zcashFactCheck.label, href: PR.zcashFactCheck.href },
+    ],
+    workshop: ["asktota", "bestie", "docsparity", "blunt", "musclemommy", "nudge", "hookcatch"],
+    workLede: "Things people can use today. Most of them started as a problem that annoyed me.",
     resume: false,
     game: false,
   },
@@ -85,24 +112,35 @@ export const SITES: Record<SiteId, Site> = {
     id: "devrel",
     title: "reet batra · devrel",
     description: "Developer relations for AI SDKs. I find what breaks for developers and fix it upstream.",
-    tagline: "developer relations · ai sdks · bangalore",
+    tagline: "developer relations.",
+    role: "devrel, ai sdks",
     motto: "I find what breaks for developers, and fix it upstream.",
-    lead: "I take developers from",
-    from: "err",
-    to: "ok",
-    stages: [
-      { text: "a red error in the quickstart" },
-      { text: "a repro anyone can run", receipt: { label: "reetbatra/cyberwave-quickstart-check", state: "repo", href: "https://github.com/reetbatra/cyberwave-quickstart-check" } },
-      { text: "the fix, merged upstream", receipt: PR.cyberwave },
-      { text: "docs that match the code", receipt: PR.sarvamSkills },
-      { text: "the next dev never hits it", receipt: { ...PR.zcashFactCheck, label: "zcashlabs/zcash-skills#4 · fact-check CI" } },
+    intro: [
+      ["I find what breaks for developers, and fix it upstream: a red error in the quickstart, a repro anyone can run, the fix merged, and docs that match the code."],
+      [
+        "before this, ",
+        { text: "four years in developer relations", href: DEVREL_YEARS },
+        ": 4,800+ developers taught in person across 11 events. now I build ",
+        { text: "docsParity", href: "https://docsparity.vercel.app" },
+        ", which catches docs drift before your users do.",
+      ],
     ],
-    nav: [
-      { href: "/work", label: "work", hint: "merged PRs" },
-      { href: "/writing", label: "writing", hint: "notes" },
-      { href: "https://www.youtube.com/@Reet-DevRel", label: "videos", hint: "youtube", external: true },
+    objects: [
+      { glyph: "bug", label: "the quickstart bug", to: "cyberwave" },
+      { glyph: "book", label: "docs that match", to: "sarvamskills" },
+      { glyph: "prompt", label: "the empty stream", to: "sarvamsdk" },
+      { glyph: "neq", label: "spot the drift", to: "drift" },
+      { glyph: "check", label: "merged upstream", to: "timeline" },
+      { glyph: "cross", label: "lcdoctor", to: "lcdoctor" },
     ],
-    ask: { text: "hiring for devrel? read the PRs first →", href: "/work" },
+    currently: [
+      { label: "last merged", text: PR.zcashFactCheck.label, href: PR.zcashFactCheck.href },
+      { label: "building", text: "docsParity", href: "https://docsparity.vercel.app" },
+      { label: "writing", text: "the agent that catches docs drift" },
+    ],
+    workshop: ["drift", "cyberwave", "sarvamskills", "sarvamsdk", "docsparity", "lcdoctor", "kyabola", "hookcatch"],
+    workLede: "Fixes in other people's code, newest first. Every row opens the PR or issue.",
+    ask: { text: "hiring for devrel? read the PRs first", href: "/work" },
     resume: true,
     game: true,
   },
@@ -110,29 +148,56 @@ export const SITES: Record<SiteId, Site> = {
     id: "fde",
     title: "reet batra · fde",
     description: "Forward deployed engineer for AI products. I build it, then stay until their team can run it.",
-    tagline: "forward deployed engineer · ai · bangalore",
+    tagline: "forward deployed engineer.",
+    role: "fde, ai",
     motto: "I build it, then stay until their team can run it.",
-    lead: "I take AI from",
-    from: "demo",
-    to: "prod",
-    stages: [
-      { text: "a demo that works on my laptop" },
-      { text: "it meets real data", receipt: { label: "reetbatra/kya-bola · ASR benchmark", state: "repo", href: "https://github.com/reetbatra/kya-bola" } },
-      { text: "a check that catches the weird cases", receipt: { label: "docsParity", state: "live", href: "https://docsparity.vercel.app" } },
-      { text: "the fix lands in their repo", receipt: PR.sarvamSdk },
-      { text: "boring, in production", receipt: { ...PR.zcashFactCheck, label: "zcashlabs/zcash-skills#4 · runs on every PR" } },
+    intro: [
+      ["I build it, then stay until their team can run it: a demo that works on my laptop, until it meets real data, a check that catches the weird cases, and the fix in their repo."],
+      [
+        "lately: ",
+        { text: "kya bola", href: "https://github.com/reetbatra/kya-bola" },
+        ", where Indian speech recognition actually works, and a streaming fix in ",
+        { text: PR.sarvamSdk.label, href: PR.sarvamSdk.href },
+        ". before that, ",
+        { text: "four years in developer relations", href: DEVREL_YEARS },
+        ".",
+      ],
     ],
-    nav: [
-      { href: "/work", label: "work", hint: "builds and fixes" },
-      { href: "/writing", label: "writing", hint: "notes" },
+    objects: [
+      { glyph: "parrot", label: "AskTota", to: "asktota" },
+      { glyph: "bubble", label: "kya bola", to: "kyabola" },
+      { glyph: "neq", label: "docsParity", to: "docsparity" },
+      { glyph: "prompt", label: "the empty stream", to: "sarvamsdk" },
+      { glyph: "cross", label: "lcdoctor", to: "lcdoctor" },
+      { glyph: "box", label: "shipped", to: "timeline" },
     ],
-    ask: { text: "hiring an FDE? start with the work →", href: "/work" },
+    currently: [
+      { label: "building", text: "AskTota", href: ASKTOTA },
+      { label: "last landed", text: PR.sarvamSdk.label, href: PR.sarvamSdk.href },
+      { label: "benchmarking", text: "kya bola", href: "https://github.com/reetbatra/kya-bola" },
+    ],
+    workshop: ["asktota", "kyabola", "docsparity", "sarvamsdk", "lcdoctor", "drift", "blunt", "musclemommy", "hookcatch"],
+    workLede: "What I built, and the fixes I landed in other teams' repos. Each row links to the repo, the live app or the PR.",
+    ask: { text: "hiring an FDE? start with the work", href: "/work" },
     resume: true,
     game: true,
   },
 };
 
-/** $ tail -f mind. Newest first. Each line is dated to the day the thing happened. */
+/** The day the "currently" card was last true. Bump it when you change a card. */
+export const CURRENTLY_UPDATED = "14 oct";
+
+/**
+ * Diffs for the workshop: the line the docs had, and the line the code wanted.
+ * Each one is the real change in a merged PR.
+ */
+export const DIFFS: { id: string; title: string; before: string; after: string; note: string; pr: Receipt }[] = [
+  { id: "cyberwave", title: "the quickstart crashed", before: 'camera = cw.twins("camera")', after: 'camera = cw.twin("camera")', note: "The first example failed on its first call.", pr: PR.cyberwave },
+  { id: "sarvamskills", title: "a renamed parameter", before: 'target_language_code="hi-IN",', after: 'language_code="hi-IN",', note: "Renamed in 0.1.29 with no alias, so the old name threw.", pr: PR.sarvamSkills },
+  { id: "sarvamsdk", title: "the empty stream", before: '{ type: "text-delta", id, delta }', after: '{ type: "text-start", id } + deltas', note: "Without text-start the AI SDK dropped every delta.", pr: PR.sarvamSdk },
+];
+
+/** Notes: what was on my mind, newest first. Each line is dated to the day the thing happened. */
 export const MIND: { date: string; text: string; href?: string }[] = [
   { date: "13 oct", text: "rebuilding this site in black and white" },
   { date: "10 oct", text: "a fact-check CI that only reads the lines a PR changed", href: "https://github.com/zcashlabs/zcash-skills/pull/4" },
@@ -145,6 +210,10 @@ export const MIND: { date: string; text: string; href?: string }[] = [
 export type WorkKind = "product" | "pr" | "report" | "role";
 
 export interface WorkItem {
+  /** Anchor and workshop card id. Products only. */
+  id?: string;
+  /** The pixel object on its workshop card. */
+  glyph?: GlyphName;
   kind: WorkKind;
   /** ISO date (yyyy-mm-dd or yyyy-mm). Used for sorting and the timeline. */
   date: string;
@@ -163,15 +232,15 @@ export interface WorkItem {
 // Statuses checked against GitHub on 2026-10-13. Product dates are each repo's first commit.
 export const WORK: WorkItem[] = [
   // products
-  { kind: "product", date: "2026-09", when: "2026", title: "AskTota", what: "Real Vedic astrology, written like your group chat. I run product, the app, brand and growth, with one engineering partner.", href: "https://www.asktota.com", status: "live", featured: true },
-  { kind: "product", date: "2026-05-31", when: "may 2026", title: "docsParity", what: "Finds where an SDK's docs and code have drifted apart, from the real exported API, and files each mismatch as an issue.", href: "https://docsparity.vercel.app", status: "live" },
-  { kind: "product", date: "2026-07-12", when: "jul 2026", title: "Blunt", what: "A speech coach that tells you exactly what to fix, then makes you say it again.", href: "https://blunt.reetbatra.com", status: "live" },
-  { kind: "product", date: "2026-08-31", when: "aug 2026", title: "Muscle Mommy", what: "A lifting PWA that decides your next set for you, and refuses a 2.5 to 5kg dumbbell jump.", href: "https://musclemommy.reetbatra.com", status: "live" },
-  { kind: "product", date: "2026-06-27", when: "jun 2026", title: "Nudge", what: "A job tracker for people who struggle to act on opportunities. It sends one push a morning and that's all.", href: "https://nudge.reetbatra.com", status: "live" },
-  { kind: "product", date: "2026-06-17", when: "jun 2026", title: "hook-catch", what: "Point a webhook at a URL, watch each request land, then replay it.", href: "https://hook-catch.vercel.app", status: "live" },
-  { kind: "product", date: "2026-08", when: "2026", title: "bestie, don't.", what: "The friend who takes your phone after a breakup.", href: "https://bestie.reetbatra.com", status: "live", on: ["home"] },
-  { kind: "product", date: "2026-10-01", when: "oct 2026", title: "lcdoctor", what: "Finds the LangChain imports that break when you upgrade, and where each one lives now.", href: "https://github.com/reetbatra/lcdoctor", status: "repo", on: ["devrel", "fde"] },
-  { kind: "product", date: "2026-08-24", when: "aug 2026", title: "kya bola", what: "Where Indian speech recognition actually works, district by district, built on the Vaani corpus.", href: "https://github.com/reetbatra/kya-bola", status: "repo", on: ["devrel", "fde"] },
+  { id: "asktota", glyph: "parrot", kind: "product", date: "2026-09", when: "2026", title: "AskTota", what: "Real Vedic astrology, written like your group chat. I run product, the app, brand and growth, with one engineering partner.", href: "https://www.asktota.com", status: "live", featured: true },
+  { id: "docsparity", glyph: "neq", kind: "product", date: "2026-05-31", when: "may 2026", title: "docsParity", what: "Finds where an SDK's docs and code have drifted apart, from the real exported API, and files each mismatch as an issue.", href: "https://docsparity.vercel.app", status: "live" },
+  { id: "blunt", glyph: "mic", kind: "product", date: "2026-07-12", when: "jul 2026", title: "Blunt", what: "A speech coach that tells you exactly what to fix, then makes you say it again.", href: "https://blunt.reetbatra.com", status: "live" },
+  { id: "musclemommy", glyph: "dumbbell", kind: "product", date: "2026-08-31", when: "aug 2026", title: "Muscle Mommy", what: "A lifting PWA that decides your next set for you, and refuses a 2.5 to 5kg dumbbell jump.", href: "https://musclemommy.reetbatra.com", status: "live" },
+  { id: "nudge", glyph: "bell", kind: "product", date: "2026-06-27", when: "jun 2026", title: "Nudge", what: "A job tracker for people who struggle to act on opportunities. It sends one push a morning and that's all.", href: "https://nudge.reetbatra.com", status: "live" },
+  { id: "hookcatch", glyph: "hook", kind: "product", date: "2026-06-17", when: "jun 2026", title: "hook-catch", what: "Point a webhook at a URL, watch each request land, then replay it.", href: "https://hook-catch.vercel.app", status: "live" },
+  { id: "bestie", glyph: "heart", kind: "product", date: "2026-08", when: "2026", title: "bestie, don't.", what: "The friend who takes your phone after a breakup.", href: "https://bestie.reetbatra.com", status: "live", on: ["home"] },
+  { id: "lcdoctor", glyph: "cross", kind: "product", date: "2026-10-01", when: "oct 2026", title: "lcdoctor", what: "Finds the LangChain imports that break when you upgrade, and where each one lives now.", href: "https://github.com/reetbatra/lcdoctor", status: "repo", on: ["devrel", "fde"] },
+  { id: "kyabola", glyph: "bubble", kind: "product", date: "2026-08-24", when: "aug 2026", title: "kya bola", what: "Where Indian speech recognition actually works, district by district, built on the Vaani corpus.", href: "https://github.com/reetbatra/kya-bola", status: "repo", on: ["devrel", "fde"] },
 
   // merged upstream
   { kind: "pr", date: "2026-10-10", when: "10 oct 2026", title: "zcashlabs/zcash-skills#4", what: "CI that fact-checks only the lines a PR changes.", href: "https://github.com/zcashlabs/zcash-skills/pull/4", status: "merged" },
@@ -271,4 +340,75 @@ export function postsFor(site: SiteId): Post[] {
   return POSTS.filter((p) => !p.on || p.on.includes(site)).sort(
     (a, b) => rank(a) - rank(b) || b.date.localeCompare(a.date),
   );
+}
+
+const TIMELINE_KINDS: Record<SiteId, WorkKind[]> = {
+  home: ["product", "role"],
+  devrel: ["pr", "report", "product", "role"],
+  fde: ["product", "pr", "role"],
+};
+
+function timelineLine(w: WorkItem): Rich {
+  const link = { text: w.title, href: w.href };
+  switch (w.kind) {
+    case "product":
+      return [w.status === "repo" ? "built " : "shipped ", link];
+    case "pr":
+      return ["merged ", link];
+    case "report":
+      return ["reported ", link, ", fixed by the maintainers"];
+    case "role":
+      return [link];
+  }
+}
+
+/** The year-by-year list on the front page: one short line per thing, newest first. */
+export function timelineFor(site: SiteId): { year: string; rows: { key: string; line: Rich }[] }[] {
+  const kinds = TIMELINE_KINDS[site];
+  const items = WORK.filter((w) => kinds.includes(w.kind) && (!w.on || w.on.includes(site))).sort((a, b) =>
+    b.date.localeCompare(a.date),
+  );
+  const years: { year: string; rows: { key: string; line: Rich }[] }[] = [];
+  for (const w of items) {
+    const year = w.date.slice(0, 4);
+    const row = { key: w.href, line: timelineLine(w) };
+    const last = years.at(-1);
+    if (last && last.year === year) last.rows.push(row);
+    else years.push({ year, rows: [row] });
+  }
+  return years;
+}
+
+/** A workshop card: a product, a fix shown as a diff, or the drift game. */
+export type Card =
+  | { type: "product"; item: WorkItem & { id: string; glyph: GlyphName } }
+  | { type: "diff"; diff: (typeof DIFFS)[number] }
+  | { type: "drift" };
+
+export function workshopFor(site: SiteId): Card[] {
+  return SITES[site].workshop.map((id): Card => {
+    if (id === "drift") return { type: "drift" };
+    const diff = DIFFS.find((d) => d.id === id);
+    if (diff) return { type: "diff", diff };
+    const item = WORK.find((w) => w.id === id);
+    if (!item || !item.glyph || !item.id) throw new Error(`workshop: no card "${id}" for ${site}`);
+    return { type: "product", item: item as WorkItem & { id: string; glyph: GlyphName } };
+  });
+}
+
+/** Lowercase roman numerals for the contents page: 1 → i, 4 → iv, 12 → xii. */
+export function roman(n: number): string {
+  if (!Number.isInteger(n) || n < 1 || n > 3999) throw new Error(`roman: ${n} is out of range`);
+  const table: [number, string][] = [
+    [1000, "m"], [900, "cm"], [500, "d"], [400, "cd"], [100, "c"], [90, "xc"],
+    [50, "l"], [40, "xl"], [10, "x"], [9, "ix"], [5, "v"], [4, "iv"], [1, "i"],
+  ];
+  let out = "";
+  for (const [v, s] of table) {
+    while (n >= v) {
+      out += s;
+      n -= v;
+    }
+  }
+  return out;
 }
