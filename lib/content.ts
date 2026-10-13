@@ -96,14 +96,13 @@ export const SITES: Record<SiteId, Site> = {
       { glyph: "mic", label: "Blunt", to: "blunt" },
       { glyph: "dumbbell", label: "Muscle Mommy", to: "musclemommy" },
       { glyph: "bell", label: "Nudge", to: "nudge" },
-      { glyph: "hook", label: "hook-catch", to: "hookcatch" },
     ],
     currently: [
       { label: "building", text: "AskTota", href: ASKTOTA },
       { label: "writing", text: "the agent that catches docs drift" },
       { label: "last fix", text: PR.zcashFactCheck.label, href: PR.zcashFactCheck.href },
     ],
-    workshop: ["asktota", "bestie", "docsparity", "blunt", "musclemommy", "nudge", "hookcatch"],
+    workshop: ["asktota", "bestie", "docsparity", "blunt", "musclemommy", "nudge"],
     workLede: "Things people can use today. Most of them started as a problem that annoyed me.",
     resume: false,
     game: false,
@@ -237,7 +236,7 @@ export const WORK: WorkItem[] = [
   { id: "blunt", glyph: "mic", kind: "product", date: "2026-07-12", when: "jul 2026", title: "Blunt", what: "A speech coach that tells you exactly what to fix, then makes you say it again.", href: "https://blunt.reetbatra.com", status: "live" },
   { id: "musclemommy", glyph: "dumbbell", kind: "product", date: "2026-08-31", when: "aug 2026", title: "Muscle Mommy", what: "A lifting PWA that decides your next set for you, and refuses a 2.5 to 5kg dumbbell jump.", href: "https://musclemommy.reetbatra.com", status: "live" },
   { id: "nudge", glyph: "bell", kind: "product", date: "2026-06-27", when: "jun 2026", title: "Nudge", what: "A job tracker for people who struggle to act on opportunities. It sends one push a morning and that's all.", href: "https://nudge.reetbatra.com", status: "live" },
-  { id: "hookcatch", glyph: "hook", kind: "product", date: "2026-06-17", when: "jun 2026", title: "hook-catch", what: "Point a webhook at a URL, watch each request land, then replay it.", href: "https://hook-catch.vercel.app", status: "live" },
+  { id: "hookcatch", glyph: "hook", kind: "product", date: "2026-06-17", when: "jun 2026", title: "hook-catch", what: "Point a webhook at a URL, watch each request land, then replay it.", href: "https://hook-catch.vercel.app", status: "live", on: ["devrel", "fde"] },
   { id: "bestie", glyph: "heart", kind: "product", date: "2026-08", when: "2026", title: "bestie, don't.", what: "The friend who takes your phone after a breakup.", href: "https://bestie.reetbatra.com", status: "live", on: ["home"] },
   { id: "lcdoctor", glyph: "cross", kind: "product", date: "2026-10-01", when: "oct 2026", title: "lcdoctor", what: "Finds the LangChain imports that break when you upgrade, and where each one lives now.", href: "https://github.com/reetbatra/lcdoctor", status: "repo", on: ["devrel", "fde"] },
   { id: "kyabola", glyph: "bubble", kind: "product", date: "2026-08-24", when: "aug 2026", title: "kya bola", what: "Where Indian speech recognition actually works, district by district, built on the Vaani corpus.", href: "https://github.com/reetbatra/kya-bola", status: "repo", on: ["devrel", "fde"] },
@@ -274,18 +273,13 @@ export interface Post {
   on?: SiteId[];
 }
 
+/** Where the posts used to live. Every post now lives on this site under /writing. */
 export const BLOG_HOME = "https://reet.hashnode.dev";
 
-// Briefs are the first lines of each post, from the Hashnode RSS feed on 2026-10-13.
-export const POSTS: Post[] = [
+/** Posts I'm writing. Published posts are Markdown files in content/posts (see lib/posts.ts). */
+export const DRAFTS: Post[] = [
   { date: "2026-10-20", when: "soon", title: "I built an AI agent that catches docs drift before your users do", brief: "How docsParity reads the real API from the TypeScript compiler and only lets the model rank what it finds.", topic: "building", draft: true },
   { date: "2026-10-19", when: "soon", title: "The support agent that never answers the same question twice", brief: "An agent that saves each answer as a skill file and replies from the file next time, with no model call.", topic: "building", draft: true },
-  { date: "2026-03-24", when: "mar 2026", title: "Building your first zero-knowledge dApp on the Midnight Network", href: `${BLOG_HOME}/building-your-first-zero-knowledge-dapp-on-the-midnight-network`, brief: "Every blockchain built before Midnight has the same problem: all data is public. Your wallet address is a fingerprint.", topic: "protocols" },
-  { date: "2024-04-21", when: "apr 2024", title: "DevRel done right: how to avoid common mistakes", href: `${BLOG_HOME}/devrel-done-right-how-to-avoid-common-mistakes-and-become-a-developer-darling`, brief: "Today we're diving into developer relations. This one is close to my heart and might be a bit controversial.", topic: "devrel" },
-  { date: "2024-04-02", when: "apr 2024", title: "Level up your git commit messages", href: `${BLOG_HOME}/level-up-your-git-commit-messages-from-cryptic-to-crystal-clear`, brief: "Ever stared at a commit message from your past self and thought, what was I thinking? One-liners like \"fix bug\" help no one.", topic: "devrel" },
-  { date: "2024-03-15", when: "mar 2024", title: "How to build and publish your own npm package", href: `${BLOG_HOME}/a-beginners-guide-on-how-to-build-and-publish-your-own-npm-package`, brief: "I built and published a small npm package in under two hours. By the end of this you'll have published one too.", topic: "building" },
-  { date: "2023-05-01", when: "may 2023", title: "The power of technical writing", href: `${BLOG_HOME}/the-power-of-technical-writing-communicating-complex-ideas-in-simple-terms`, brief: "Technical writing is where complex ideas and processes get explained in simple terms. The different kinds, and how to get good at them.", topic: "devrel" },
-  { date: "2025-07-13", when: "jul 2025", title: "Solidity vs Cairo: a technical overview", href: `${BLOG_HOME}/solidity-vs-cairo-a-technical-overview`, brief: "Myth: you need Solidity before you can understand Cairo. Fact: Cairo stands on its own.", topic: "protocols" },
 ];
 
 /** Spot the drift: three real bugs, each fixed in a merged PR. */
@@ -330,19 +324,6 @@ export function workFor(site: SiteId): WorkItem[] {
   );
 }
 
-/**
- * Posts for one page: drafts first, then newest first, with protocol posts (Web3 history) last
- * so they never lead.
- */
-export function postsFor(site: SiteId): Post[] {
-  const rank = (p: Post) => {
-    if (p.draft) return 0;
-    return p.topic === "protocols" ? 2 : 1;
-  };
-  return POSTS.filter((p) => !p.on || p.on.includes(site)).sort(
-    (a, b) => rank(a) - rank(b) || b.date.localeCompare(a.date),
-  );
-}
 
 type Activity = "building" | "oss" | "role";
 

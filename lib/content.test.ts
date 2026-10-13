@@ -1,7 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { DIFFS, DRIFT_ROUNDS, MIND, PERSON, POSTS, postsFor, roman, SITES, TIMELINE_EXAMPLES, timelineFor, WORK, workFor, workshopFor } from "./content.ts";
+import { DIFFS, DRAFTS, DRIFT_ROUNDS, MIND, PERSON, roman, SITES, TIMELINE_EXAMPLES, timelineFor, WORK, workFor, workshopFor } from "./content.ts";
 import { GLYPHS } from "./glyphs.ts";
+import { postsFor } from "./posts.ts";
 import { SITE_IDS } from "./sites.ts";
 
 const everyString = (value: unknown): string[] =>
@@ -13,7 +14,7 @@ const everyString = (value: unknown): string[] =>
         ? Object.values(value).flatMap(everyString)
         : [];
 
-const ALL = { SITES, MIND, WORK, POSTS, DRIFT_ROUNDS, PERSON, DIFFS };
+const ALL = { SITES, MIND, WORK, DRAFTS, DRIFT_ROUNDS, PERSON, DIFFS };
 
 test("no em dashes or en dashes anywhere in the copy", () => {
   const bad = everyString(ALL).filter((s) => /[—–]/.test(s));
@@ -145,6 +146,8 @@ test("mind is newest first and short enough to read at a glance", () => {
 });
 
 test("drafts have no link until they're published", () => {
-  for (const p of POSTS) if (p.draft) assert.equal(p.href, undefined, p.title);
-  for (const p of POSTS) if (!p.draft) assert.ok(p.href, p.title);
+  for (const p of DRAFTS) {
+    assert.ok(p.draft, p.title);
+    assert.equal(p.href, undefined, p.title);
+  }
 });

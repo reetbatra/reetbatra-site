@@ -3,6 +3,7 @@
 // Keys are handled in one place (Chrome) and the page parts listen for what they care about.
 type Events = {
   "egg:open": undefined;
+  "game:open": undefined;
 };
 
 export function emit<K extends keyof Events>(name: K, detail?: Events[K]) {

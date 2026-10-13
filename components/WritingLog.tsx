@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { roman, type Post } from "@/lib/content";
 
 /** A contents page: numeral, title, a dotted leader, and the date where a page number would be. */
@@ -17,9 +18,7 @@ export default function WritingLog({ posts }: { posts: Post[] }) {
         return (
           <li key={p.title} className={p.draft ? "draft" : undefined}>
             {p.href ? (
-              <a href={p.href} target="_blank" rel="noopener noreferrer">
-                {row}
-              </a>
+              <Link href={p.href}>{row}</Link>
             ) : (
               <div>{row}</div>
             )}

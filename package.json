@@ -9,9 +9,11 @@
     "lint": "eslint",
     "test": "node --test \"lib/**/*.test.ts\"",
     "typecheck": "tsc --noEmit",
-    "assets": "node scripts/make-assets.mjs"
+    "assets": "node scripts/make-assets.mjs",
+    "import:hashnode": "node scripts/import-hashnode.mjs"
   },
   "dependencies": {
+    "marked": "^15.0.12",
     "next": "16.2.9",
     "react": "19.2.4",
     "react-dom": "19.2.4"
@@ -21,9 +23,13 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/turndown": "^5.0.6",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "linkedom": "^0.18.13",
     "tailwindcss": "^4",
+    "turndown": "^7.2.4",
+    "turndown-plugin-gfm": "^1.0.2",
     "typescript": "^5"
   }
 }

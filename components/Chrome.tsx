@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { on, reducedMotion } from "./bus";
+import { emit, on, reducedMotion } from "./bus";
+import FlyGame from "./FlyGame";
 import Clock from "./Clock";
 import Glyph from "./Glyph";
 import { asciiPortrait, loadPortrait, scramble } from "./portrait-canvas";
@@ -10,15 +11,13 @@ import { currentTheme, setTheme, useTheme } from "./theme";
 const isTyping = (t: EventTarget | null) =>
   t instanceof HTMLElement && (t.isContentEditable || t.tagName === "TEXTAREA" || t.tagName === "INPUT");
 
-const TOTA = ["go build something.", "ship it a little ugly.", "a stranger will use it.", "okay, one more repo."];
-
 /**
- * The footer (year, the time in Bengaluru, the lights, a parrot), the three keys
- * (t lights, p hello, d the drift game) and the press-p ASCII portrait.
+ * The footer (year, the time in Bengaluru, the lights, a parrot that opens the game), the
+ * three keys (t lights, p hello, d the drift game), the press-p ASCII portrait, and the
+ * "play this" game in the corner.
  */
 export default function Chrome({ name, city, game, resume }: { name: string; city: string; game: boolean; resume: boolean }) {
   const [egg, setEgg] = useState(false);
-  const [said, setSaid] = useState(-1);
   const theme = useTheme();
   const opener = useRef<HTMLElement | null>(null);
   const eggPre = useRef<HTMLPreElement>(null);
@@ -89,18 +88,8 @@ export default function Chrome({ name, city, game, resume }: { name: string; cit
   return (
     <>
       <footer className="foot">
-        <button
-          type="button"
-          className={`pal${said >= 0 ? " talking" : ""}`}
-          onClick={() => setSaid((s) => (s + 1) % TOTA.length)}
-          aria-label="The parrot. Click it."
-        >
+        <button type="button" className="pal" onClick={() => emit("game:open")} aria-label="Play tota flies">
           <Glyph name="parrot" />
-          {said >= 0 && (
-            <span className="says" role="status">
-              {TOTA[said]}
-            </span>
-          )}
         </button>
         <div className="foot-row">
           <p className="mute">
@@ -133,6 +122,8 @@ export default function Chrome({ name, city, game, resume }: { name: string; cit
           </div>
         </div>
       </footer>
+
+      <FlyGame />
 
       {egg && (
         <button ref={eggBtn} type="button" className="egg" onClick={closeEgg} aria-label="Close the big portrait">

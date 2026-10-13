@@ -20,6 +20,8 @@ Locally: `npm run dev`, then open localhost:3000, devrel.localhost:3000 and fde.
 - `lib/security-headers.ts`: CSP, HSTS and friends, wired in `next.config.ts` (tested).
 - `components/Cover.tsx` (first screen), `Plate.tsx` (engraved portrait, prints on scroll, ripples on hover, click opens the ASCII one), `Sections.tsx` (intro, currently, timeline, notes), `Workshop.tsx` + `Demos.tsx` (the live sketches), `Chrome.tsx` (footer, keys t/p/d, the parrot, the press-p portrait), `DriftGame.tsx`, `WorkList.tsx`, `WritingLog.tsx`.
 - Sketch animations only run while a card is hovered, focused or (phones) on screen; at rest each shows its finished frame.
+- The blog: `content/posts/*.md` (imported from Hashnode once by `npm run import:hashnode`, edited here now), read by `lib/posts.ts`, shown at `/writing/[slug]`. Images live in `public/writing/<slug>/` because the CSP only allows same-origin images. Every post's canonical URL is on www, whichever host it's read on. `/rss.xml` (full text), `/sitemap.xml` and `/llms.txt` are per host. Drafts stay in `DRAFTS` in `lib/content.ts`.
+- "play this" (bottom right) and the footer parrot open `components/FlyGame.tsx`: tota flies through walls of bugs, tap/Enter/Space/up to flap, Esc closes. Physics in `lib/fly.ts` (pure, tested). Tota is a parrot: she flies, she doesn't run.
 - `scripts/make-assets.mjs` builds the favicon, home-screen icon and `public/portrait.png` from `assets-src/`. Run `npm run assets` after changing a source photo. The portrait cutout came from macOS Vision via `assets-src/lift.swift`.
 
 # Rules
