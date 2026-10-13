@@ -13,7 +13,7 @@ const LW = 200;
 const LH = 225;
 
 /**
- * Plate i: the portrait as a copperplate engraving. It prints top to bottom the first time it
+ * The portrait as a copperplate engraving. It prints top to bottom the first time it
  * scrolls into view, ripples while you hover it, and a click opens the big ASCII one.
  */
 export default function Plate({ caption }: { caption: string }) {
@@ -121,7 +121,7 @@ export default function Plate({ caption }: { caption: string }) {
         {failed && <span className="plate-fail">the photo didn&apos;t load</span>}
       </button>
       <figcaption>
-        <span className="sc">plate i.</span> <em>{caption}</em>
+        <em>{caption}</em>
       </figcaption>
     </figure>
   );

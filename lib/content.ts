@@ -57,7 +57,7 @@ export const PERSON = {
   first: "reet",
   last: "batra",
   city: "bengaluru",
-  photoCaption: "the author, on stage at eth india.",
+  photoCaption: "on stage",
   links: [
     { label: "github", href: "https://github.com/reetbatra" },
     { label: "x", href: "https://x.com/reet_batra" },
