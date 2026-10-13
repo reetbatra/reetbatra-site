@@ -83,7 +83,7 @@ export default function Cover({
                 go(o.to);
               }}
             >
-              <Glyph name={o.glyph} />
+              <Glyph name={o.glyph} color />
             </a>
           ))}
         </nav>

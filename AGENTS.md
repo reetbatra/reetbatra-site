@@ -26,7 +26,7 @@ Locally: `npm run dev`, then open localhost:3000, devrel.localhost:3000 and fde.
 - Every visible string is user-facing copy: no em dashes, humanizer rules apply, lowercase voice for labels.
 - Every number links to something a stranger can check. No percentage improvement claims (resume metric policy). `lib/content.test.ts` enforces both.
 - AI first. Web3 work is history and never leads a page; the tests check titles, the first work row and the first post.
-- No colour anywhere. Status is fill (merged, fixed), outline (live, repo), dashes (draft) or grey (past).
+- No colour anywhere except the pixel objects on the cover (and the share card that copies it): Reet asked for those in colour on 2026-10-14. Their colours live in `GLYPH_COLORS` and must hold 3:1 on both pages (tested). Status is fill (merged, fixed), outline (live, repo), dashes (draft) or grey (past).
 - `MIND` (the notes list) lines are dated to the day the thing happened and link to it when there's a link.
 - AskTota is never marketed as "AI-powered".
 - Site-wide CSS resets live in `@layer base` in `app/globals.css`. Preflight strips link underlines, so base `a` puts them back; block links set `text-decoration: none` themselves.

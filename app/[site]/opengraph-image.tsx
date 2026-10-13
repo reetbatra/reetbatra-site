@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { PERSON, SITES } from "@/lib/content";
-import { GLYPH_SIZE, glyphPath } from "@/lib/glyphs";
+import { GLYPH_COLORS, GLYPH_SIZE, glyphPath } from "@/lib/glyphs";
 import { siteParam } from "@/lib/site-param";
 import { PRODUCTION_ORIGIN } from "@/lib/sites";
 
@@ -45,7 +45,10 @@ export default async function OpengraphImage({ params }: { params: Promise<{ sit
           <div style={{ display: "flex", gap: 14 }}>
             {objects.map((o) => (
               <svg key={o.to} width={64} height={64} viewBox={`0 0 ${GLYPH_SIZE} ${GLYPH_SIZE}`} shapeRendering="crispEdges">
-                <path d={glyphPath(o.glyph)} fill="#0a0a0a" />
+                <path d={glyphPath(o.glyph)} fill={GLYPH_COLORS[o.glyph].fill} />
+                {glyphPath(o.glyph, "+") && (
+                  <path d={glyphPath(o.glyph, "+")} fill={GLYPH_COLORS[o.glyph].accent ?? GLYPH_COLORS[o.glyph].fill} />
+                )}
               </svg>
             ))}
           </div>
