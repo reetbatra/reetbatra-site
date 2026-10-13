@@ -112,7 +112,7 @@ test("the timeline sums each year up with a few examples, and roles get their ow
   assert.equal(y2026.year, "2026");
   assert.match(JSON.stringify(y2026.rows[0].line), /contributing to open source/);
   const roles = timelineFor("home").flatMap((y) => y.rows.map((r) => [y.year, JSON.stringify(r.line)]));
-  for (const [year, who] of [["2025", "StarkWare"], ["2024", "DablClub"], ["2023", "ZKX"]])
+  for (const [year, who] of [["2025", "StarkWare"], ["2024", "DablClub"], ["2022", "ZKX"]])
     assert.ok(roles.some(([y, l]) => y === year && l.includes(who)), `${year} ${who}`);
 });
 

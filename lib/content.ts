@@ -119,7 +119,7 @@ export const SITES: Record<SiteId, Site> = {
       ["I find what breaks for developers, and fix it upstream: a red error in the quickstart, a repro anyone can run, the fix merged, and docs that match the code."],
       [
         "before this, ",
-        { text: "three years in developer relations", href: DEVREL_YEARS },
+        { text: "four years in developer relations", href: DEVREL_YEARS },
         ": 4,800+ developers taught in person across 11 events. now I build ",
         { text: "docsParity", href: "https://docsparity.vercel.app" },
         ", which catches docs drift before your users do.",
@@ -159,7 +159,7 @@ export const SITES: Record<SiteId, Site> = {
         ", where Indian speech recognition actually works, and a streaming fix in ",
         { text: PR.sarvamSdk.label, href: PR.sarvamSdk.href },
         ". before that, ",
-        { text: "three years in developer relations", href: DEVREL_YEARS },
+        { text: "four years in developer relations", href: DEVREL_YEARS },
         ".",
       ],
     ],
@@ -257,7 +257,7 @@ export const WORK: WorkItem[] = [
   // before
   { kind: "role", date: "2025", when: "2025", title: "developer relations at StarkWare", what: "Across all three devrel roles: 4,800+ developers taught in person at 11 events, 12+ tutorials in official docs, and a video series at 4K to 8K views an episode.", href: "https://www.linkedin.com/in/reet-batra/", status: "past" },
   { kind: "role", date: "2024", when: "2024", title: "developer relations at DablClub", what: "Developer relations.", href: "https://www.linkedin.com/in/reet-batra/", status: "past" },
-  { kind: "role", date: "2023", when: "2023", title: "developer relations at ZKX", what: "Developer relations.", href: "https://www.linkedin.com/in/reet-batra/", status: "past" },
+  { kind: "role", date: "2022", when: "2022 to 2023", title: "developer relations at ZKX", what: "Developer relations.", href: "https://www.linkedin.com/in/reet-batra/", status: "past" },
 ];
 
 export type PostTopic = "building" | "devrel" | "protocols";
