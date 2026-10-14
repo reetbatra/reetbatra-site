@@ -125,7 +125,8 @@ async function write({ slug, title, date, brief, html }) {
 }
 
 const firstSentences = (text, max = 180) => {
-  const t = text.replace(/\s+/g, " ").trim();
+  // A post that opens with an "Introduction" heading would otherwise start its brief with it.
+  const t = text.replace(/\s+/g, " ").trim().replace(/^(introduction|overview)\s+/i, "");
   if (t.length <= max) return t;
   const cut = t.slice(0, max);
   const end = Math.max(cut.lastIndexOf(". "), cut.lastIndexOf("? "));

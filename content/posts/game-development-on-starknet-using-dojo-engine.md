@@ -1,7 +1,7 @@
 ---
 title: "Game Development on Starknet using Dojo Engine"
 date: "2025-02-13"
-brief: "Introduction Gaming has evolved significantly, from traditional board games to digital experiences, and now, to on-chain games—a completely new paradigm enabled by blockchain…"
+brief: "Gaming has evolved significantly, from traditional board games to digital experiences, and now, to on-chain games—a completely new paradigm enabled by blockchain…"
 topic: protocols
 original: "https://reet.hashnode.dev/game-development-on-starknet-using-dojo-engine"
 ---

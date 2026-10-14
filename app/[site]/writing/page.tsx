@@ -3,7 +3,7 @@ import Chrome from "@/components/Chrome";
 import SubHead from "@/components/SubHead";
 import WritingLog from "@/components/WritingLog";
 import { PERSON, SITES } from "@/lib/content";
-import { postsFor } from "@/lib/posts";
+import { postsByYear } from "@/lib/posts";
 import { siteParam } from "@/lib/site-param";
 
 export const metadata: Metadata = { title: "writing", alternates: { canonical: "/writing" } };
@@ -15,7 +15,7 @@ export default async function Writing({ params }: { params: Promise<{ site: stri
       <main>
         <SubHead title="writing" lede="Notes from building things and teaching developers, from 2022 on. The two drafts are next." />
         <h2 className="contents-t">contents</h2>
-        <WritingLog posts={postsFor(s.id)} />
+        <WritingLog blocks={postsByYear(s.id)} />
         <p className="all-link">
           <a href="/rss.xml">rss feed</a>
         </p>

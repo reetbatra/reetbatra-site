@@ -1,7 +1,7 @@
 ---
 title: "Cartridge Controller: Let's talk about smooth UX for onchain games"
 date: "2025-03-10"
-brief: "Introduction The gaming industry is undergoing a massive transformation with the rise of Web3, bringing true ownership, decentralized economies, and seamless player experiences."
+brief: "The gaming industry is undergoing a massive transformation with the rise of Web3, bringing true ownership, decentralized economies, and seamless player experiences."
 topic: protocols
 original: "https://reet.hashnode.dev/cartridge-controller-lets-talk-about-smooth-ux-for-onchain-games"
 ---

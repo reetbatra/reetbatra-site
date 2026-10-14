@@ -1,7 +1,7 @@
 ---
 title: "Session Keys on Starknet: Unlocking Gasless & Secure Transactions"
 date: "2025-03-24"
-brief: "Introduction As blockchain adoption grows, user experience remains one of the biggest hurdles."
+brief: "As blockchain adoption grows, user experience remains one of the biggest hurdles."
 topic: protocols
 original: "https://reet.hashnode.dev/session-keys-on-starknet-unlocking-gasless-and-secure-transactions"
 ---

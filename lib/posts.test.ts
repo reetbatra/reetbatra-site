@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
-import { allPosts, getPost, monthYear, parsePost, postsFor, readingMinutes, renderMarkdown, slugify } from "./posts.ts";
+import { allPosts, getPost, monthYear, parsePost, postsByYear, postsFor, readingMinutes, renderMarkdown, slugify } from "./posts.ts";
 
 test("parsePost reads the front matter and the body", () => {
   const p = parsePost("x", '---\ntitle: "A: b"\ndate: "2024-04-02"\nbrief: "Hi."\ntopic: devrel\n---\n\nBody here.\n');
@@ -30,13 +30,19 @@ test("every Hashnode post is here, complete, with its images on this site", () =
   assert.equal(getPost("your-docs-platform-wrote-your-llms-txt")?.original, undefined, "first published here");
 });
 
-test("the writing page: drafts first, Web3 posts never lead, published posts link here", () => {
+test("the writing page: drafts first, then by date in year blocks, Web3 never leads", () => {
   for (const id of ["home", "devrel", "fde"] as const) {
     const list = postsFor(id);
     assert.ok(list[0].draft);
     const firstPublished = list.find((p) => !p.draft);
     assert.notEqual(firstPublished?.topic, "protocols");
     for (const p of list) if (!p.draft) assert.match(p.href ?? "", /^\/writing\/[a-z0-9-]+$/);
+    const dates = list.filter((p) => !p.draft).map((p) => p.date);
+    assert.deepEqual(dates, [...dates].sort().reverse(), `${id} is not newest first`);
+    const labels = postsByYear(id).map((b) => b.label);
+    assert.equal(labels[0], "soon");
+    assert.deepEqual(labels.slice(1), [...labels.slice(1)].sort().reverse());
+    assert.equal(new Set(labels).size, labels.length, "one block per year");
   }
 });
 

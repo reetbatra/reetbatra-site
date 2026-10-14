@@ -1373,6 +1373,24 @@
     font-size: 22px;
     margin-bottom: 18px;
   }
+  .contents-blocks section + section {
+    margin-top: 28px;
+  }
+  .c-year {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--mute);
+  }
+  .c-year::after {
+    content: "";
+    flex: 1;
+    border-top: 1px solid var(--line);
+  }
   .contents li > a,
   .contents li > div {
     display: grid;

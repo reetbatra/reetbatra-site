@@ -76,10 +76,7 @@ export function readingMinutes(markdown: string): number {
   return Math.max(1, Math.round(words / 220));
 }
 
-/**
- * Posts for one page: drafts first, then newest first, with protocol posts (Web3 history)
- * last so they never lead.
- */
+/** Posts for one page: drafts first, then strictly newest first. */
 export function postsFor(site: SiteId): Post[] {
   const published: Post[] = allPosts().map((p) => ({
     date: p.date,
@@ -89,13 +86,21 @@ export function postsFor(site: SiteId): Post[] {
     brief: p.brief,
     topic: p.topic,
   }));
-  const rank = (p: Post) => {
-    if (p.draft) return 0;
-    return p.topic === "protocols" ? 2 : 1;
-  };
   return [...DRAFTS, ...published]
     .filter((p) => !p.on || p.on.includes(site))
-    .sort((a, b) => rank(a) - rank(b) || b.date.localeCompare(a.date));
+    .sort((a, b) => Number(!!b.draft) - Number(!!a.draft) || b.date.localeCompare(a.date));
+}
+
+/** The contents page in blocks: drafts under "soon", then one block per year, newest first. */
+export function postsByYear(site: SiteId): { label: string; posts: Post[] }[] {
+  const blocks: { label: string; posts: Post[] }[] = [];
+  for (const p of postsFor(site)) {
+    const label = p.draft ? "soon" : p.date.slice(0, 4);
+    const last = blocks.at(-1);
+    if (last && last.label === label) last.posts.push(p);
+    else blocks.push({ label, posts: [p] });
+  }
+  return blocks;
 }
 
 export const slugify = (text: string) =>

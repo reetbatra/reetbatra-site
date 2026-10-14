@@ -1,7 +1,7 @@
 ---
 title: "Paymaster: The Secret to Making dApps Feel Like Web2"
 date: "2025-02-25"
-brief: "Introduction Imagine a world where gas fees no longer hinder smooth and frictionless transactions."
+brief: "Imagine a world where gas fees no longer hinder smooth and frictionless transactions."
 topic: protocols
 original: "https://reet.hashnode.dev/paymaster-the-secret-to-making-dapps-feel-like-web2"
 ---
