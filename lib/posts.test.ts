@@ -22,11 +22,12 @@ test("every Hashnode post is here, complete, with its images on this site", () =
   assert.ok(posts.length >= 21, `only ${posts.length} posts`);
   for (const p of posts) {
     assert.ok(p.body.length > 1500, `${p.slug} looks truncated`);
-    assert.match(p.original ?? "", /^https:\/\/reet\.hashnode\.dev\//, p.slug);
+    if (p.original) assert.match(p.original, /^https:\/\/reet\.hashnode\.dev\//, p.slug);
     assert.doesNotMatch(p.body, /cdn\.hashnode\.com/, `${p.slug} still loads images from Hashnode`);
     for (const [, src] of p.body.matchAll(/!\[[^\]]*\]\(([^)]+)\)/g)) assert.ok(existsSync(`public${src}`), `${p.slug}: ${src} is missing`);
   }
   assert.ok(getPost("level-up-your-git-commit-messages-from-cryptic-to-crystal-clear"));
+  assert.equal(getPost("your-docs-platform-wrote-your-llms-txt")?.original, undefined, "first published here");
 });
 
 test("the writing page: drafts first, Web3 posts never lead, published posts link here", () => {

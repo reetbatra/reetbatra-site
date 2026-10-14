@@ -29,7 +29,7 @@ test("no percentage claims (resume metric policy)", () => {
 test("every link is https, mailto, or a path inside the same page", () => {
   const hrefs = everyString(ALL).filter((s) => /^(https?:|mailto:|\/)/.test(s) && !s.includes(" "));
   assert.ok(hrefs.length > 30, "expected to find the links");
-  for (const h of hrefs) assert.match(h, /^(https:\/\/|mailto:|\/[a-z]*$)/, h);
+  for (const h of hrefs) assert.match(h, /^(https:\/\/|mailto:|\/[a-z0-9/-]*$)/, h);
 });
 
 test("no page links to another of the three pages", () => {

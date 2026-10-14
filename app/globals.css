@@ -1492,6 +1492,15 @@
   .prose ol {
     list-style: decimal;
   }
+  .prose li:has(> input[type="checkbox"]) {
+    list-style: none;
+    margin-left: -1.3em;
+  }
+  .prose li > input[type="checkbox"] {
+    accent-color: var(--ink);
+    margin-right: 0.5em;
+    translate: 0 1px;
+  }
   .prose li + li {
     margin-top: 0.35em;
   }

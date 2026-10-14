@@ -9,7 +9,7 @@
 // Images are downloaded into public/writing/<slug>/ because the site's CSP only allows images
 // from its own origin.
 import { createHash } from "node:crypto";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { extname } from "node:path";
 import { DOMParser, parseHTML } from "linkedom";
 import TurndownService from "turndown";
@@ -89,7 +89,21 @@ const yaml = (s) => JSON.stringify(s); // JSON strings are valid YAML scalars
 /** Slugs being imported, so links between my own posts can stay on my site. */
 const SLUGS = new Set();
 
+// Posts written here first (no `original:` line) and cross-posted to Hashnode afterwards
+// must not come back as a second copy, so skip any feed item with the same title.
+const native = new Set(
+  (existsSync(OUT) ? readdirSync(OUT) : [])
+    .filter((f) => f.endsWith(".md"))
+    .map((f) => readFileSync(`${OUT}/${f}`, "utf8"))
+    .filter((raw) => !/^original:/m.test(raw.split("\n---")[0]))
+    .map((raw) => JSON.parse(raw.match(/^title: (.*)$/m)?.[1] ?? '""').toLowerCase()),
+);
+
 async function write({ slug, title, date, brief, html }) {
+  if (native.has(title.toLowerCase())) {
+    console.log(`skip  ${slug}  (first published on reetbatra.com)`);
+    return;
+  }
   const { html: local, images } = await localiseImages(html, slug);
   const md = td
     .turndown(local)
