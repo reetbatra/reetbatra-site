@@ -277,10 +277,10 @@ export interface Post {
 export const BLOG_HOME = "https://reet.hashnode.dev";
 
 /** Posts I'm writing. Published posts are Markdown files in content/posts (see lib/posts.ts). */
-export const DRAFTS: Post[] = [
-  { date: "2026-10-20", when: "soon", title: "I built an AI agent that catches docs drift before your users do", brief: "How docsParity reads the real API from the TypeScript compiler and only lets the model rank what it finds.", topic: "building", draft: true },
-  { date: "2026-10-19", when: "soon", title: "The support agent that never answers the same question twice", brief: "An agent that saves each answer as a skill file and replies from the file next time, with no model call.", topic: "building", draft: true },
-];
+// export const DRAFTS: Post[] = [
+//   { date: "2026-10-20", when: "soon", title: "I built an AI agent that catches docs drift before your users do", brief: "How docsParity reads the real API from the TypeScript compiler and only lets the model rank what it finds.", topic: "building", draft: true },
+//   { date: "2026-10-19", when: "soon", title: "The support agent that never answers the same question twice", brief: "An agent that saves each answer as a skill file and replies from the file next time, with no model call.", topic: "building", draft: true },
+// ];
 
 /** Spot the drift: three real bugs, each fixed in a merged PR. */
 export const DRIFT_ROUNDS: { question: string; lines: string[]; answer: number; why: string; pr: Receipt }[] = [
