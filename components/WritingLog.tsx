@@ -22,7 +22,7 @@ export default function WritingLog({ blocks }: { blocks: { label: string; posts:
                   <span className="c-num">{roman(n)}.</span>
                   <span className="c-title">{p.title}</span>
                   <span className="c-dots" aria-hidden="true" />
-                  <span className="c-when">{p.draft ? "soon" : p.when.split(" ")[0]}</span>
+                  {/* <span className="c-when">{p.draft ? "soon" : p.when.split(" ")[0]}</span> */}
                   <span className="c-brief">{p.brief}</span>
                 </>
               );
