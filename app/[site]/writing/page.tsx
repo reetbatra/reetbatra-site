@@ -13,7 +13,7 @@ export default async function Writing({ params }: { params: Promise<{ site: stri
   return (
     <div className="column">
       <main>
-        <SubHead title="writing" lede="Notes from building things and teaching developers, from 2022 on. The two drafts are next." />
+        <SubHead title="writing" lede="Notes from building, teaching and unlearning, from 2022 on." />
         <h2 className="contents-t">contents</h2>
         <WritingLog blocks={postsByYear(s.id)} />
         <p className="all-link">
