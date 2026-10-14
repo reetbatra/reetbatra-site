@@ -11,7 +11,8 @@ export const metadata: Metadata = { alternates: { canonical: "/" } };
 export default async function Home({ params }: { params: Promise<{ site: string }> }) {
   const id = await siteParam(params);
   const s = SITES[id];
-  const links = [...PERSON.links.filter((l) => id !== "home" || l.label !== "youtube")];
+  // The blog leads the header links: it's the one that stays on this site.
+  const links = [{ label: "blog", href: "/writing" }, ...PERSON.links.filter((l) => id !== "home" || l.label !== "youtube")];
   if (s.resume) links.push({ label: "resume", href: "/resume.pdf" });
   const seeAll = id === "devrel" ? "every PR" : "everything";
 
