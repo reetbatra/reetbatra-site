@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import Chrome from "@/components/Chrome";
 import Cover from "@/components/Cover";
 import { Currently, Intro, Notes, Timeline } from "@/components/Sections";
+import Showcase from "@/components/Showcase";
 import Workshop from "@/components/Workshop";
-import { MIND, PERSON, SITES, timelineFor, workshopFor } from "@/lib/content";
+import { flagshipFor, MIND, PERSON, SITES, timelineFor, workshopFor } from "@/lib/content";
+import { postsFor } from "@/lib/posts";
 import { siteParam } from "@/lib/site-param";
 
 export const metadata: Metadata = { alternates: { canonical: "/" } };
@@ -15,6 +17,12 @@ export default async function Home({ params }: { params: Promise<{ site: string 
   const links = [{ label: "blog", href: "/writing" }, ...PERSON.links.filter((l) => id !== "home" || l.label !== "youtube")];
   if (s.resume) links.push({ label: "resume", href: "/resume.pdf" });
   const seeAll = id === "devrel" ? "every PR" : "everything";
+  const flagship = flagshipFor(id);
+  // Newest first, and never a Web3 post at the top of the devrel page.
+  const latest = postsFor(id)
+    .filter((p) => !p.draft)
+    .sort((a, b) => Number(a.topic === "protocols") - Number(b.topic === "protocols") || b.date.localeCompare(a.date))
+    .slice(0, 3);
 
   return (
     <>
@@ -32,7 +40,11 @@ export default async function Home({ params }: { params: Promise<{ site: string 
           <Intro site={s} caption={PERSON.photoCaption} />
           <Currently rows={s.currently} objects={s.objects} />
         </div>
-        <Workshop cards={workshopFor(id)} seeAll={seeAll} />
+        {flagship ? (
+          <Showcase flagship={flagship} posts={latest} game={s.game} />
+        ) : (
+          <Workshop cards={workshopFor(id)} seeAll={{ label: seeAll, href: "/work" }} />
+        )}
         <div className="column">
           <Timeline years={timelineFor(id)} seeAll={seeAll} />
           <Notes items={MIND} />

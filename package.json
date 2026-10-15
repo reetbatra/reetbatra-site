@@ -10,7 +10,8 @@
     "test": "node --test \"lib/**/*.test.ts\"",
     "typecheck": "tsc --noEmit",
     "assets": "node scripts/make-assets.mjs",
-    "import:hashnode": "node scripts/import-hashnode.mjs"
+    "import:hashnode": "node scripts/import-hashnode.mjs",
+    "videos": "node scripts/fetch-videos.mjs"
   },
   "dependencies": {
     "marked": "^15.0.12",

@@ -44,6 +44,11 @@ export interface Site {
   currently: { label: string; text: string; href?: string }[];
   /** Workshop card ids, in order. Each is a WORK item's `id`, a diff, or "drift". */
   workshop: string[];
+  /**
+   * Instead of the workshop: two flagship projects, then videos, then writing (and the game,
+   * if `game` is on). Used on the devrel page, where the work is the content.
+   */
+  showcase?: { flagship: [string, string] };
   /** The line under "work" on /work. */
   workLede: string;
   /** The one ask on the page. Home has none on purpose. */
@@ -115,7 +120,7 @@ export const SITES: Record<SiteId, Site> = {
     role: "devrel, ai sdks",
     motto: "I find what breaks for developers, and fix it upstream.",
     intro: [
-      ["I find what breaks for developers, and fix it upstream: a red error in the quickstart, a repro anyone can run, the fix merged, and docs that match the code."],
+      ["I find what breaks for developers, and fix it upstream: a red error in the quickstart, a small example anyone can run, the fix merged, and docs that match the code."],
       [
         "before this, ",
         { text: "four years in developer relations", href: DEVREL_YEARS },
@@ -125,19 +130,20 @@ export const SITES: Record<SiteId, Site> = {
       ],
     ],
     objects: [
-      { glyph: "bug", label: "the quickstart bug", to: "cyberwave" },
-      { glyph: "book", label: "docs that match", to: "sarvamskills" },
-      { glyph: "prompt", label: "the empty stream", to: "sarvamsdk" },
-      { glyph: "neq", label: "spot the drift", to: "drift" },
-      { glyph: "check", label: "merged upstream", to: "timeline" },
+      { glyph: "neq", label: "docsParity", to: "docsparity" },
       { glyph: "cross", label: "lcdoctor", to: "lcdoctor" },
+      { glyph: "play", label: "videos", to: "videos" },
+      { glyph: "book", label: "writing", to: "writing" },
+      { glyph: "bug", label: "spot the drift", to: "drift" },
+      { glyph: "check", label: "merged upstream", to: "timeline" },
     ],
     currently: [
       { label: "last merged", text: PR.zcashFactCheck.label, href: PR.zcashFactCheck.href },
       { label: "building", text: "docsParity", href: "https://docsparity.vercel.app" },
       { label: "writing", text: "the agent that catches docs drift" },
     ],
-    workshop: ["drift", "cyberwave", "sarvamskills", "sarvamsdk", "docsparity", "lcdoctor", "kyabola", "hookcatch"],
+    workshop: [],
+    showcase: { flagship: ["docsparity", "lcdoctor"] },
     workLede: "Fixes in other people's code, newest first. Every row opens the PR or issue.",
     ask: { text: "hiring for devrel? read the PRs first", href: "/work" },
     resume: true,
@@ -274,6 +280,18 @@ export interface Post {
   on?: SiteId[];
 }
 
+/**
+ * YouTube videos for the devrel page, from the channel feed on 2026-10-15. AI first: Web3 is
+ * history, so a Starknet video never leads. Thumbnails are downloaded into public/videos by
+ * `npm run videos` because the CSP only allows images from this site.
+ */
+export const CHANNEL = "https://www.youtube.com/@Reet-DevRel";
+export const VIDEOS: { id: string; title: string; date: string }[] = [
+  { id: "bPP6gLCDVkY", title: "Monetize your app in one command: an AI pricing agent with Dodo Payments", date: "2026-10-08" },
+  { id: "k3gnxuBfLUs", title: "Sarvam AI speech to text on 64 Indian languages", date: "2026-10-08" },
+  { id: "bhXRvlMl5sE", title: "Write Starknet contracts in TypeScript, no Cairo: Sasuke demo", date: "2026-09-29" },
+];
+
 /** Where the posts used to live. Every post now lives on this site under /writing. */
 export const BLOG_HOME = "https://reet.hashnode.dev";
 
@@ -388,15 +406,23 @@ export type Card =
   | { type: "diff"; diff: (typeof DIFFS)[number] }
   | { type: "drift" };
 
+function cardFor(site: SiteId, id: string): Card {
+  if (id === "drift") return { type: "drift" };
+  const diff = DIFFS.find((d) => d.id === id);
+  if (diff) return { type: "diff", diff };
+  const item = WORK.find((w) => w.id === id);
+  if (!item || !item.glyph || !item.id) throw new Error(`workshop: no card "${id}" for ${site}`);
+  return { type: "product", item: item as WorkItem & { id: string; glyph: GlyphName } };
+}
+
 export function workshopFor(site: SiteId): Card[] {
-  return SITES[site].workshop.map((id): Card => {
-    if (id === "drift") return { type: "drift" };
-    const diff = DIFFS.find((d) => d.id === id);
-    if (diff) return { type: "diff", diff };
-    const item = WORK.find((w) => w.id === id);
-    if (!item || !item.glyph || !item.id) throw new Error(`workshop: no card "${id}" for ${site}`);
-    return { type: "product", item: item as WorkItem & { id: string; glyph: GlyphName } };
-  });
+  return SITES[site].workshop.map((id) => cardFor(site, id));
+}
+
+/** The devrel page's two flagship cards, or null on a page that has a workshop instead. */
+export function flagshipFor(site: SiteId): Card[] | null {
+  const sc = SITES[site].showcase;
+  return sc ? sc.flagship.map((id) => cardFor(site, id)) : null;
 }
 
 /** Lowercase roman numerals for the contents page: 1 → i, 4 → iv, 12 → xii. */

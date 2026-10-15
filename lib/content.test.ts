@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { DIFFS, DRAFTS, DRIFT_ROUNDS, MIND, PERSON, roman, SITES, TIMELINE_EXAMPLES, timelineFor, WORK, workFor, workshopFor } from "./content.ts";
+import { CHANNEL, flagshipFor, VIDEOS, DIFFS, DRAFTS, DRIFT_ROUNDS, MIND, PERSON, roman, SITES, TIMELINE_EXAMPLES, timelineFor, WORK, workFor, workshopFor } from "./content.ts";
 import { GLYPHS } from "./glyphs.ts";
 import { postsFor } from "./posts.ts";
 import { SITE_IDS } from "./sites.ts";
@@ -66,7 +66,8 @@ test("every cover object is a real glyph that points at something on the page", 
   for (const id of SITE_IDS) {
     const s = SITES[id];
     assert.ok(s.objects.length >= 5 && s.objects.length <= 7, `${id} has ${s.objects.length} objects`);
-    const targets = new Set([...s.workshop, "timeline", "notes"]);
+    const shown = s.showcase ? [...s.showcase.flagship, "videos", "writing", ...(s.game ? ["drift"] : [])] : s.workshop;
+    const targets = new Set([...shown, "timeline", "notes"]);
     for (const o of s.objects) {
       assert.ok(o.glyph in GLYPHS, `${id}: ${o.glyph}`);
       assert.ok(targets.has(o.to), `${id}: ${o.label} points at missing #${o.to}`);
@@ -78,7 +79,8 @@ test("every workshop card resolves, once, and the game is only where it's switch
   for (const id of SITE_IDS) {
     const cards = workshopFor(id);
     assert.equal(new Set(SITES[id].workshop).size, cards.length, `${id} repeats a card`);
-    assert.equal(cards.some((c) => c.type === "drift"), SITES[id].game, id);
+    const inShowcase = !!SITES[id].showcase && SITES[id].game;
+    assert.equal(cards.some((c) => c.type === "drift") || inShowcase, SITES[id].game, id);
     for (const c of cards) if (c.type === "product") assert.ok(!c.item.on || c.item.on.includes(id), `${id}: ${c.item.title}`);
   }
 });
@@ -149,5 +151,24 @@ test("drafts have no link until they're published", () => {
   for (const p of DRAFTS) {
     assert.ok(p.draft, p.title);
     assert.equal(p.href, undefined, p.title);
+  }
+});
+
+test("devrel shows two flagship projects and videos instead of a workshop; the others keep theirs", () => {
+  const f = flagshipFor("devrel");
+  assert.ok(f && f.length === 2 && f.every((c) => c.type === "product"));
+  assert.equal(flagshipFor("home"), null);
+  assert.equal(flagshipFor("fde"), null);
+  assert.ok(workshopFor("home").length > 0 && workshopFor("fde").length > 0);
+});
+
+test("videos: real YouTube ids, newest first among AI ones, Web3 never first, thumbnails on disk", async () => {
+  const { existsSync } = await import("node:fs");
+  assert.match(CHANNEL, /^https:\/\/www\.youtube\.com\/@/);
+  assert.ok(VIDEOS.length >= 2);
+  assert.doesNotMatch(VIDEOS[0].title.toLowerCase(), /starknet|cairo|ethereum|onchain|web3/);
+  for (const v of VIDEOS) {
+    assert.match(v.id, /^[\w-]{11}$/);
+    assert.ok(existsSync(`public/videos/${v.id}.webp`), `${v.id} thumbnail missing; run npm run videos`);
   }
 });

@@ -13,7 +13,17 @@ const ext = { target: "_blank", rel: "noopener noreferrer" } as const;
  * The workshop: a grid of small live sketches, one per thing. On a mouse they play on hover;
  * on a phone, where nothing hovers, each one plays while it's on screen.
  */
-export default function Workshop({ cards, seeAll }: { cards: Card[]; seeAll: string }) {
+export default function Workshop({
+  cards,
+  seeAll,
+  title = "workshop",
+  columns = 3,
+}: {
+  cards: Card[];
+  seeAll?: { label: string; href: string };
+  title?: string;
+  columns?: 1 | 2 | 3;
+}) {
   const list = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
@@ -27,12 +37,12 @@ export default function Workshop({ cards, seeAll }: { cards: Card[]; seeAll: str
   }, []);
 
   return (
-    <section className="sec wide" aria-labelledby="workshop-t">
+    <section className="sec wide" aria-labelledby={`${title}-t`}>
       <header className="sec-head">
-        <h2 id="workshop-t">workshop</h2>
-        <Link href="/work">{seeAll} →</Link>
+        <h2 id={`${title}-t`}>{title}</h2>
+        {seeAll && <Link href={seeAll.href}>{seeAll.label} →</Link>}
       </header>
-      <ul ref={list} className="lab">
+      <ul ref={list} className={`lab cols-${columns}`}>
         {cards.map((c) => {
           if (c.type === "drift")
             return (
