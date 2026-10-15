@@ -52,7 +52,7 @@ So your llms.txt is exactly as good as your sidebar and your frontmatter. Scroll
 3. **Order.** Your sidebar was designed for a human who can see the whole tree. If Changelog or Pricing sits above Quickstart, move it.
 4. **Length.** If the file is thousands of lines, it's not a map anymore. Cloudflare's root llms.txt is just one line per product, each pointing to that product's own llms.txt. Mintlify does something similar automatically once an index passes 100,000 characters.
 
-The spec has a section built for this exact problem and almost nobody uses it well: `## Optional`. Anything under it is stuff an agent can skip when context is tight. Changelogs, legacy guides, community links. Move them there.
+The spec already has a place for this. Add a section with the heading `## Optional` (written exactly like that, it's a Markdown heading), and an agent knows it can skip everything under it when its context is tight. Changelogs, legacy guides and community links belong there. Very few files use it.
 
 Cloudflare also does a small thing worth stealing. Deprecated products stay listed, but the description says it right there: "Firewall Rules (deprecated)" and what replaced it.
 
@@ -123,7 +123,7 @@ If you override the generated file, it now has to change every time your docs do
 - [ ] The blockquote says what the product is, for a stranger.
 - [ ] There's a "read this first" near the top.
 - [ ] No bare links. Every page has a frontmatter description.
-- [ ] Deprecated pages are labelled or moved to `## Optional`.
+- [ ] Deprecated pages are labelled or moved under an `## Optional` heading.
 - [ ] Quickstart comes before Changelog.
 - [ ] Big docs are split, one llms.txt per product.
 - [ ] There's a list of don'ts, pulled from real support questions.
