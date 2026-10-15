@@ -121,15 +121,27 @@ function LcDoctor() {
   );
 }
 
-// A made up grid, not data: it's a picture of "district by district".
-const DOTS = Array.from({ length: 48 }, (_, i) => ((i * 37 + 11) % 9) / 8);
+// The fact behind kya bola, drawn: the Vaani corpus has 64 languages and commercial speech
+// APIs support 19 of them (from the kya-bola README). Filled dots are supported, hollow aren't.
+const LANGS = Array.from({ length: 64 }, (_, i) => i < 19);
+const VOICE = [4, 7, 10, 6, 12, 8, 5, 11, 7, 13, 9, 6, 10, 4, 8, 12, 6, 9];
 
 function KyaBola() {
   return (
-    <div className="d-kya" aria-hidden="true">
-      {DOTS.map((v, i) => (
-        <i key={i} style={{ "--v": v, "--i": i } as React.CSSProperties} />
-      ))}
+    <div className="d-kya">
+      <div className="wave" aria-hidden="true">
+        {VOICE.map((h, i) => (
+          <i key={i} style={{ "--h": h, "--i": i } as React.CSSProperties} />
+        ))}
+      </div>
+      <div className="langs" role="img" aria-label="64 languages, 19 with a commercial speech API">
+        {LANGS.map((on, i) => (
+          <i key={i} className={on ? "on" : undefined} style={{ "--i": i } as React.CSSProperties} />
+        ))}
+      </div>
+      <p>
+        <b>19</b> of 64 languages have a speech API
+      </p>
     </div>
   );
 }

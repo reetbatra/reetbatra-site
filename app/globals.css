@@ -942,22 +942,48 @@
 
   .d-kya {
     display: grid;
-    grid-template-columns: repeat(8, 14px);
-    gap: 7px;
+    justify-items: center;
+    gap: 12px;
+    font-size: 12.5px;
   }
-  .d-kya i {
+  .d-kya .wave {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    height: 34px;
+  }
+  .d-kya .wave i {
     display: block;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
+    width: 3px;
+    height: calc(var(--h) * 2.4px);
     background: var(--ink);
-    transform: scale(calc(0.25 + var(--v) * 0.75));
-    animation: kya 2.2s calc(var(--i) * 45ms) ease-in-out infinite alternate;
+    border-radius: 2px;
+    animation: bar 0.8s calc(var(--i) * -60ms) ease-in-out infinite alternate;
   }
-  @keyframes kya {
-    to {
-      transform: scale(0.3);
+  .d-kya .langs {
+    display: grid;
+    grid-template-columns: repeat(16, 9px);
+    gap: 5px;
+  }
+  .d-kya .langs i {
+    display: block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    border: 1px solid var(--ink);
+  }
+  .d-kya .langs i.on {
+    background: var(--ink);
+    animation: lit 0.4s calc(var(--i) * 40ms) both;
+  }
+  @keyframes lit {
+    from {
+      background: transparent;
     }
+  }
+  .d-kya b {
+    font-family: var(--font-mono);
+    font-weight: 500;
   }
 
   /* the drift game, inside its card */

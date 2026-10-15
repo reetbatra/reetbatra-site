@@ -154,9 +154,10 @@ test("drafts have no link until they're published", () => {
   }
 });
 
-test("devrel shows two flagship projects and videos instead of a workshop; the others keep theirs", () => {
+test("devrel shows its flagship projects and videos instead of a workshop; the others keep theirs", () => {
   const f = flagshipFor("devrel");
-  assert.ok(f && f.length === 2 && f.every((c) => c.type === "product"));
+  assert.ok(f && f.length >= 2 && f.length <= 3 && f.every((c) => c.type === "product"));
+  assert.ok(f.some((c) => c.type === "product" && c.item.id === "kyabola"), "kya bola is a flagship");
   assert.equal(flagshipFor("home"), null);
   assert.equal(flagshipFor("fde"), null);
   assert.ok(workshopFor("home").length > 0 && workshopFor("fde").length > 0);

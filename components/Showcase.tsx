@@ -6,13 +6,13 @@ const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "
 const when = (date: string) => `${Number(date.slice(8, 10))} ${MONTHS[Number(date.slice(5, 7)) - 1]} ${date.slice(0, 4)}`;
 
 /**
- * The devrel page's middle: two flagship projects, the videos, the latest writing, and the
+ * The devrel page's middle: the flagship projects, the videos, the latest writing, and the
  * drift game. On this page the content is the work, so it leads instead of a workshop grid.
  */
 export default function Showcase({ flagship, posts, game }: { flagship: Card[]; posts: Post[]; game: boolean }) {
   return (
     <>
-      <Workshop title="flagship" cards={flagship} seeAll={{ label: "every PR", href: "/work" }} columns={2} />
+      <Workshop title="flagship" cards={flagship} seeAll={{ label: "every PR", href: "/work" }} columns={flagship.length >= 3 ? 3 : 2} />
 
       <section className="sec wide" id="videos" aria-labelledby="videos-t">
         <header className="sec-head">

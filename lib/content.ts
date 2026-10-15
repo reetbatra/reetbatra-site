@@ -48,7 +48,7 @@ export interface Site {
    * Instead of the workshop: two flagship projects, then videos, then writing (and the game,
    * if `game` is on). Used on the devrel page, where the work is the content.
    */
-  showcase?: { flagship: [string, string] };
+  showcase?: { flagship: string[] };
   /** The line under "work" on /work. */
   workLede: string;
   /** The one ask on the page. Home has none on purpose. */
@@ -131,6 +131,7 @@ export const SITES: Record<SiteId, Site> = {
     ],
     objects: [
       { glyph: "neq", label: "docsParity", to: "docsparity" },
+      { glyph: "bubble", label: "kya bola, voice AI", to: "kyabola" },
       { glyph: "cross", label: "lcdoctor", to: "lcdoctor" },
       { glyph: "play", label: "videos", to: "videos" },
       { glyph: "book", label: "writing", to: "writing" },
@@ -143,7 +144,7 @@ export const SITES: Record<SiteId, Site> = {
       { label: "writing", text: "the agent that catches docs drift" },
     ],
     workshop: [],
-    showcase: { flagship: ["docsparity", "lcdoctor"] },
+    showcase: { flagship: ["docsparity", "kyabola", "lcdoctor"] },
     workLede: "Fixes in other people's code, newest first. Every row opens the PR or issue.",
     ask: { text: "hiring for devrel? read the PRs first", href: "/work" },
     resume: true,
@@ -161,7 +162,7 @@ export const SITES: Record<SiteId, Site> = {
       [
         "lately: ",
         { text: "kya bola", href: "https://github.com/reetbatra/kya-bola" },
-        ", where Indian speech recognition actually works, and a streaming fix in ",
+        ", a voice AI benchmark of where Indian speech recognition actually works, and a streaming fix in ",
         { text: PR.sarvamSdk.label, href: PR.sarvamSdk.href },
         ". before that, ",
         { text: "four years in developer relations", href: DEVREL_YEARS },
@@ -170,7 +171,7 @@ export const SITES: Record<SiteId, Site> = {
     ],
     objects: [
       { glyph: "parrot", label: "AskTota", to: "asktota" },
-      { glyph: "bubble", label: "kya bola", to: "kyabola" },
+      { glyph: "bubble", label: "kya bola, voice AI", to: "kyabola" },
       { glyph: "neq", label: "docsParity", to: "docsparity" },
       { glyph: "prompt", label: "the empty stream", to: "sarvamsdk" },
       { glyph: "cross", label: "lcdoctor", to: "lcdoctor" },
@@ -246,7 +247,7 @@ export const WORK: WorkItem[] = [
   { id: "hookcatch", glyph: "hook", kind: "product", date: "2026-06-17", when: "jun 2026", title: "hook-catch", what: "Point a webhook at a URL, watch each request land, then replay it.", href: "https://hook-catch.vercel.app", status: "live", on: ["devrel", "fde"] },
   { id: "bestie", glyph: "heart", kind: "product", date: "2026-08", when: "2026", title: "bestie, don't.", what: "The friend who takes your phone after a breakup.", href: "https://bestie.reetbatra.com", status: "live", on: ["home"] },
   { id: "lcdoctor", glyph: "cross", kind: "product", date: "2026-10-01", when: "oct 2026", title: "lcdoctor", what: "Finds the LangChain imports that break when you upgrade, and where each one lives now.", href: "https://github.com/reetbatra/lcdoctor", status: "repo", on: ["devrel", "fde"] },
-  { id: "kyabola", glyph: "bubble", kind: "product", date: "2026-08-24", when: "aug 2026", title: "kya bola", what: "Where Indian speech recognition actually works, district by district, built on the Vaani corpus.", href: "https://github.com/reetbatra/kya-bola", status: "repo", on: ["devrel", "fde"] },
+  { id: "kyabola", glyph: "bubble", kind: "product", date: "2026-08-24", when: "aug 2026", title: "kya bola", what: "A voice AI benchmark: where speech to text actually understands Indian speech, district by district. The Vaani corpus has 64 languages; commercial speech APIs support 19.", href: "https://github.com/reetbatra/kya-bola", status: "repo", on: ["devrel", "fde"] },
 
   // merged upstream
   { kind: "pr", date: "2026-10-10", when: "10 oct 2026", title: "zcashlabs/zcash-skills#4", what: "CI that fact-checks only the lines a PR changes.", href: "https://github.com/zcashlabs/zcash-skills/pull/4", status: "merged" },
