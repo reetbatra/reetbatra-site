@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Chrome from "@/components/Chrome";
 import { PERSON, SITES } from "@/lib/content";
-import { allPosts, getPost, monthYear, postsFor, readingMinutes, renderMarkdown } from "@/lib/posts";
+import Toc from "@/components/Toc";
+import { allPosts, getPost, monthYear, postsFor, readingMinutes, renderPost } from "@/lib/posts";
 import { siteParam } from "@/lib/site-param";
 import { PRODUCTION_ORIGIN } from "@/lib/sites";
 
@@ -44,6 +45,7 @@ export default async function PostPage({ params }: { params: Params }) {
   const newer = i > 0 ? list[i - 1] : undefined;
   const older = i >= 0 && i < list.length - 1 ? list[i + 1] : undefined;
   const minutes = readingMinutes(p.body);
+  const { html, toc } = renderPost(p.body);
 
   // Structured data for search and answer engines: who wrote it, when, and where it lives.
   const ld = {
@@ -62,42 +64,47 @@ export default async function PostPage({ params }: { params: Params }) {
   };
 
   return (
-    <div className="column">
-      <main>
-        <header className="sub">
-          <div className="sub-corners">
-            <Link href="/" className="who">
-              {PERSON.name}
-            </Link>
-            <Link href="/writing" className="mute">
-              ← contents
-            </Link>
-          </div>
-          <p className="post-meta">
-            <time dateTime={p.date}>{monthYear(p.date)}</time> · {minutes} min read
-          </p>
-          <h1 className="post-title">{p.title}</h1>
-        </header>
-        <article className="prose" dangerouslySetInnerHTML={{ __html: renderMarkdown(p.body) }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, "\\u003c") }} />
-        <nav className="post-nav" aria-label="More posts">
-          {newer ? (
-            <Link href={newer.href!}>
-              <span className="mute">← newer</span>
-              {newer.title}
-            </Link>
-          ) : (
-            <span />
-          )}
-          {older && (
-            <Link href={older.href!} className="older">
-              <span className="mute">older →</span>
-              {older.title}
-            </Link>
-          )}
-        </nav>
-      </main>
-      <Chrome name={PERSON.name} city={PERSON.city} game={false} resume={s.resume} />
+    <div className="post-grid">
+      <aside className="post-side">
+        <Toc entries={toc} />
+      </aside>
+      <div className="post-main">
+        <main>
+          <header className="sub">
+            <div className="sub-corners">
+              <Link href="/" className="who">
+                {PERSON.name}
+              </Link>
+              <Link href="/writing" className="mute">
+                ← contents
+              </Link>
+            </div>
+            <p className="post-meta">
+              <time dateTime={p.date}>{monthYear(p.date)}</time> · {minutes} min read
+            </p>
+            <h1 className="post-title">{p.title}</h1>
+          </header>
+          <article className="prose" dangerouslySetInnerHTML={{ __html: html }} />
+          <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, "\\u003c") }} />
+          <nav className="post-nav" aria-label="More posts">
+            {newer ? (
+              <Link href={newer.href!}>
+                <span className="mute">← newer</span>
+                {newer.title}
+              </Link>
+            ) : (
+              <span />
+            )}
+            {older && (
+              <Link href={older.href!} className="older">
+                <span className="mute">older →</span>
+                {older.title}
+              </Link>
+            )}
+          </nav>
+        </main>
+        <Chrome name={PERSON.name} city={PERSON.city} game={false} resume={s.resume} />
+      </div>
     </div>
   );
 }

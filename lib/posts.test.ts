@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
-import { allPosts, getPost, monthYear, parsePost, postsByYear, postsFor, readingMinutes, renderMarkdown, slugify } from "./posts.ts";
+import { allPosts, getPost, monthYear, renderPost, parsePost, postsByYear, postsFor, readingMinutes, renderMarkdown, slugify } from "./posts.ts";
 
 test("parsePost reads the front matter and the body", () => {
   const p = parsePost("x", '---\ntitle: "A: b"\ndate: "2024-04-02"\nbrief: "Hi."\ntopic: devrel\n---\n\nBody here.\n');
@@ -30,18 +30,20 @@ test("every Hashnode post is here, complete, with its images on this site", () =
   assert.equal(getPost("your-docs-platform-wrote-your-llms-txt")?.original, undefined, "first published here");
 });
 
-test("the writing page: drafts first, then by date in year blocks, Web3 never leads", () => {
+test("the writing page: drafts (if any) first, then by date in year blocks, Web3 never leads", () => {
   for (const id of ["home", "devrel", "fde"] as const) {
     const list = postsFor(id);
-    assert.ok(list[0].draft);
+    const drafts = list.filter((p) => p.draft).length;
+    assert.ok(list.slice(0, drafts).every((p) => p.draft), "drafts come first");
     const firstPublished = list.find((p) => !p.draft);
     assert.notEqual(firstPublished?.topic, "protocols");
     for (const p of list) if (!p.draft) assert.match(p.href ?? "", /^\/writing\/[a-z0-9-]+$/);
     const dates = list.filter((p) => !p.draft).map((p) => p.date);
     assert.deepEqual(dates, [...dates].sort().reverse(), `${id} is not newest first`);
     const labels = postsByYear(id).map((b) => b.label);
-    assert.equal(labels[0], "soon");
-    assert.deepEqual(labels.slice(1), [...labels.slice(1)].sort().reverse());
+    const years = labels.filter((l) => l !== "soon");
+    if (drafts) assert.equal(labels[0], "soon");
+    assert.deepEqual(years, [...years].sort().reverse());
     assert.equal(new Set(labels).size, labels.length, "one block per year");
   }
 });
@@ -69,6 +71,27 @@ test("repeated headings get unique ids", () => {
 test("small helpers", () => {
   assert.equal(monthYear("2024-04-02"), "apr 2024");
   assert.equal(slugify("What is <b>DevRel</b>?"), "what-is-devrel");
+  assert.equal(slugify("you&#39;ve never &amp; don&#x27;ts"), "youve-never-donts", "entities don't leak into ids");
   assert.equal(readingMinutes("word ".repeat(660)), 3);
   assert.equal(readingMinutes("hi"), 1);
+});
+
+test("the table of contents lists the post's top level headings, with the ids the page uses", () => {
+  const { html, toc } = renderPost("## One\n\ntext\n\n### Sub\n\n## Two & *more*\n\n## One");
+  assert.deepEqual(toc, [
+    { id: "one", text: "One" },
+    { id: "two-more", text: "Two & more" },
+    { id: "one-1", text: "One" },
+  ]);
+  for (const t of toc) assert.match(html, new RegExp(`id="${t.id}"`));
+  assert.deepEqual(renderPost("### Only\n\n### Threes").toc.map((t) => t.text), ["Only", "Threes"], "h3-only posts still get one");
+  assert.deepEqual(renderPost("no headings").toc, []);
+});
+
+test("every post that has sections gets a table of contents", () => {
+  const p = getPost("your-docs-platform-wrote-your-llms-txt");
+  assert.ok(p);
+  const toc = renderPost(p.body).toc.map((t) => t.text);
+  assert.equal(toc[0], "0 to 5 min: does it even load");
+  assert.ok(toc.includes("Sources"));
 });

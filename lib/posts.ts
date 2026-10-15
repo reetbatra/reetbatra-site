@@ -107,7 +107,7 @@ export const slugify = (text: string) =>
   text
     .toLowerCase()
     .replace(/<[^>]+>/g, "")
-    .replace(/&[a-z]+;/g, "")
+    .replace(/&(#\d+|#x[0-9a-f]+|[a-z]+);/gi, "") // entities like &#39; for an apostrophe
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
@@ -120,6 +120,30 @@ const escapeHtml = (s: string) =>
  * kept), so nothing in a post can inject markup or script.
  */
 export function renderMarkdown(md: string): string {
+  return renderPost(md).html;
+}
+
+export interface TocEntry {
+  id: string;
+  text: string;
+}
+
+const plain = (html: string) =>
+  html
+    .replace(/<[^>]+>/g, "")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&")
+    .trim();
+
+/**
+ * The post as HTML, plus its table of contents: the headings at the post's top level (some
+ * posts only use ### headings, so it's whichever level is highest, not always h2).
+ */
+export function renderPost(md: string): { html: string; toc: TocEntry[] } {
+  const heads: (TocEntry & { level: number })[] = [];
   const seen = new Map<string, number>();
   const marked = new Marked({ gfm: true });
   marked.use({
@@ -132,6 +156,8 @@ export function renderMarkdown(md: string): string {
         const id = n ? `${base}-${n}` : base;
         // The page title is the h1, so post headings start at h2.
         const level = Math.min(6, Math.max(2, depth));
+        const label = plain(text);
+        if (label) heads.push({ id, text: label, level });
         return `<h${level} id="${id}"><a href="#${id}" class="hash" aria-hidden="true" tabindex="-1">#</a>${text}</h${level}>\n`;
       },
       link({ href, title, tokens }: Tokens.Link) {
@@ -151,5 +177,7 @@ export function renderMarkdown(md: string): string {
       },
     },
   });
-  return marked.parse(md, { async: false });
+  const html = marked.parse(md, { async: false });
+  const top = Math.min(...heads.map((h) => h.level));
+  return { html, toc: heads.filter((h) => h.level === top).map(({ id, text }) => ({ id, text })) };
 }
