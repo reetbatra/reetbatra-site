@@ -43,7 +43,7 @@ Compare with Stripe. Their file opens with a "Start here" block before a single 
 
 ## 10 to 15 min: the link list
 
-This is where generated files fall apart, and it's not the platform's fault. Mintlify's own docs explain how theirs works: pages appear in your `docs.json` navigation order, each description is your frontmatter `description` cut at 300 characters, and pages with no description just show up as a bare link.
+Generated files usually go wrong in the link list. Mintlify documents how theirs is built: pages follow your `docs.json` navigation order, each description is the page's frontmatter `description` cut at 300 characters, and a page with no description becomes a bare link.
 
 So your llms.txt is exactly as good as your sidebar and your frontmatter. Scroll through and look for:
 
@@ -58,7 +58,7 @@ Cloudflare also does a small thing worth stealing. Deprecated products stay list
 
 ## 15 to 20 min: write the don'ts
 
-This is the part no generator will ever write for you, and it's the part I'd spend the most time on.
+A generator can't write this section. It reads your docs, not your support inbox. I'd spend most of the 30 minutes here.
 
 Open your support channel, your Discord, your GitHub issues. Look for the questions you answer every single week. The wrong API people keep using. The SDK version that's still in every old blog post. The framework you're *not* compatible with.
 
@@ -130,7 +130,7 @@ If you override the generated file, it now has to change every time your docs do
 - [ ] An agent given only the file can finish your quickstart.
 - [ ] You have a log baseline and a named owner.
 
-None of this is hard. It's just the bit of the job that fell between docs, DevRel, and whoever set up the docs platform two years ago. If you write docs or do DevRel, it's yours now.
+On most teams nobody owns this file. It got switched on when someone set up the docs platform, and nobody has opened it since. If you write docs or do DevRel, open yours this week and go down the list above.
 
 ## Sources
 

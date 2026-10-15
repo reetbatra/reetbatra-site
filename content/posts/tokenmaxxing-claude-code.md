@@ -7,7 +7,7 @@ topic: building
 
 Your Claude Code limit resets every week whether you used it or not. Whatever you didn't spend is gone.
 
-That's the whole idea behind tokenmaxxing, a word I kept hearing from YouTubers this month. Most of what I watched was about squeezing more tokens out of the system. This post is about the other half: making the tokens you already pay for do real work while you're not at the keyboard.
+Tokenmaxxing, a word I kept hearing from YouTubers this month, is about using as much of that limit as you can. Most of the videos were about getting more tokens. I wanted to write about getting real work out of the ones I already pay for, including while I'm asleep.
 
 Here's what that looked like for me, and the setup that made it possible.
 
@@ -27,11 +27,11 @@ Then I went to sleep.
 
 Halfway through I sent it a second request: a friend's work laptop was blocking my site as "not secure." It didn't drop the redesign. It finished the build check, then found the actual cause (the domain was only a few months old, so corporate filters had never categorized it), shipped proper security headers, and wrote me a list of the steps only I could do.
 
-None of that came from a better prompt. It came from the setup around the prompt.
+The prompt was one paragraph. What made the night work was the setup around it, which is the rest of this post.
 
 ## 1. Answer its questions before it asks them
 
-An agent that stops to ask "should I commit this?" at 3 am has stopped for the night. So the most valuable file in my setup isn't a prompt. It's my `CLAUDE.md`, the file Claude Code reads at the start of every session.
+If the agent stops at 3 am to ask "should I commit this?", nothing else happens until I wake up. So the file that matters most in my setup is `CLAUDE.md`, which Claude Code reads at the start of every session.
 
 Mine answers the questions it would otherwise wake me up for:
 
@@ -49,9 +49,7 @@ Go through your last week of sessions. Every time it stopped to check with you, 
 
 ## 2. Give it a goal, not a task
 
-A task ends when the agent thinks it's done. A goal ends when a condition is true.
-
-Claude Code's `/goal` command takes a condition and won't let the session stop until it holds. Mine was basically "the portfolio is redesigned, built end to end, and live on all three domains." It kept going until that was true, even when some step along the way would normally have been a natural place to pause.
+Claude Code's `/goal` command takes a condition and keeps the session going until that condition is true, instead of stopping when the agent decides it's done. Mine was basically "the portfolio is redesigned, built end to end, and live on all three domains." It kept going until that was true, even when some step along the way would normally have been a natural place to pause.
 
 The trick is writing a condition you can check. "Make the site better" never finishes. "Live on all three domains, tests passing" does.
 
@@ -65,7 +63,7 @@ The easiest way to find yours is to ask the agent at the end of a long week: "Wh
 
 ## 4. Spend the tokens on checking, not writing
 
-Here's the part nobody posts screenshots of. Most of the useful work that night wasn't writing code. It was checking it.
+Most of the useful work that night was checking code, not writing it.
 
 The agent caught its own bugs because it was told to look:
 
@@ -73,7 +71,7 @@ The agent caught its own bugs because it was told to look:
 - A test for the little game in the corner of my site failed because the autopilot kept flying into the top of every gap. It worked out that the physics were fine and the test pilot was aiming too high.
 - The code review flagged that a link filter would wave through `//evil.com` as if it were a page on my site. It fixed it and added a test.
 
-If generating code is cheap, verifying it is where the tokens should go. Tests, a real browser, screenshots at phone width, a review pass. The more of that happens before you look, the less you have to look.
+Code is cheap to generate now, so I'd rather spend tokens on tests, a real browser, screenshots at phone width and a review pass. The more of that happens before I look, the less time I spend reviewing.
 
 ## 5. Hand it the problem, not your solution
 
@@ -81,13 +79,13 @@ When my friend's laptop blocked my site, my instinct was "add some security head
 
 I described the problem instead, and the agent checked the domain's registration date, Google Safe Browsing and the live response headers. The real cause was that corporate filters block domains that are new and have never been categorized. Headers help, but the actual fix was submitting the site to the filter vendors, which it told me to do.
 
-Your guess at the fix is often what keeps the agent from finding the real one.
+If I'd given it my guess, it would have done my guess.
 
 ## 6. Keep talking while it works
 
 You don't have to wait for it to finish. Through the morning I kept sending small messages while it was mid-task: colour the pixel icons, take one project off the home page, pull all my posts over from Hashnode. It finished what it was doing, then picked each one up in order.
 
-That only works because each request was small and clear. One sentence, one change.
+This worked because each request was one small, clear change.
 
 ## 7. Parallel is for independent work
 
@@ -97,14 +95,14 @@ A redesign isn't that. Every page shares the same styles, fonts and components. 
 
 ## What it still needed me for
 
-It did a night of work. It did not replace my judgment, and the morning made that obvious:
+It still needed me for a few things, and the morning showed which ones:
 
 - **Taste.** I asked for a game like Chrome's offline dinosaur, and it started planning a runner. My mascot is a tota, a parrot. Totas fly, they don't run on the road. One message and it built a flying game instead.
 - **Facts only I know.** It put one of my old jobs in the wrong year, because that's the year I'd given it. I corrected it in one line.
 - **Anything with my name on it in public.** It wrote the posts and the covers, but it didn't post to X or Hashnode. That's my account and my call.
 - **Deleting things.** I took two unfinished drafts off my blog myself. It noticed and updated its tests around my change instead of putting them back.
 
-That split feels right to me. The agent does the volume. I do taste, facts and anything public.
+So the agent did the volume, and I handled taste, facts and anything public. I'm happy with that split.
 
 ## Where tokens get wasted
 
@@ -128,4 +126,4 @@ One thing I'm deliberately leaving out: stacking accounts and routing traffic th
 - [ ] Taste, facts about you and anything public stay with you.
 - [ ] You check your limit the day before it resets.
 
-The weekly limit is the cheapest engineer you'll ever have. It just needs instructions good enough to work the night shift.
+Start with the first line. Next time it stops to ask you something, write the answer into `CLAUDE.md` before you reply.
