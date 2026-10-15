@@ -4,7 +4,7 @@ import Cover from "@/components/Cover";
 import { Currently, Intro, Notes, Timeline } from "@/components/Sections";
 import Showcase from "@/components/Showcase";
 import Workshop from "@/components/Workshop";
-import { flagshipFor, MIND, PERSON, SITES, timelineFor, workshopFor } from "@/lib/content";
+import { fixesFor, flagshipFor, MIND, PERSON, SITES, timelineFor, videosFor, workshopFor } from "@/lib/content";
 import { postsFor } from "@/lib/posts";
 import { siteParam } from "@/lib/site-param";
 
@@ -40,8 +40,17 @@ export default async function Home({ params }: { params: Promise<{ site: string 
           <Intro site={s} caption={PERSON.photoCaption} />
           <Currently rows={s.currently} objects={s.objects} />
         </div>
-        {flagship ? (
-          <Showcase flagship={flagship} posts={latest} game={s.game} />
+        {flagship && s.showcase ? (
+          <Showcase
+            title={s.showcase.title}
+            flagship={flagship}
+            fixes={fixesFor(id)}
+            videos={videosFor(id)}
+            videosTitle={s.showcase.videosTitle}
+            posts={latest}
+            game={s.game}
+            seeAll={seeAll}
+          />
         ) : (
           <Workshop cards={workshopFor(id)} seeAll={{ label: seeAll, href: "/work" }} />
         )}

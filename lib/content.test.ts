@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { CHANNEL, flagshipFor, VIDEOS, DIFFS, DRAFTS, DRIFT_ROUNDS, MIND, PERSON, roman, SITES, TIMELINE_EXAMPLES, timelineFor, WORK, workFor, workshopFor } from "./content.ts";
+import { CHANNEL, fixesFor, flagshipFor, VIDEOS, videosFor, DIFFS, DRAFTS, DRIFT_ROUNDS, MIND, PERSON, roman, SITES, TIMELINE_EXAMPLES, timelineFor, WORK, workFor, workshopFor } from "./content.ts";
 import { GLYPHS } from "./glyphs.ts";
 import { postsFor } from "./posts.ts";
 import { SITE_IDS } from "./sites.ts";
@@ -66,7 +66,9 @@ test("every cover object is a real glyph that points at something on the page", 
   for (const id of SITE_IDS) {
     const s = SITES[id];
     assert.ok(s.objects.length >= 5 && s.objects.length <= 7, `${id} has ${s.objects.length} objects`);
-    const shown = s.showcase ? [...s.showcase.flagship, "videos", "writing", ...(s.game ? ["drift"] : [])] : s.workshop;
+    const shown = s.showcase
+      ? [...s.showcase.flagship, ...(s.showcase.fixes ?? []), "videos", "writing", ...(s.game ? ["drift"] : [])]
+      : s.workshop;
     const targets = new Set([...shown, "timeline", "notes"]);
     for (const o of s.objects) {
       assert.ok(o.glyph in GLYPHS, `${id}: ${o.glyph}`);
@@ -154,13 +156,23 @@ test("drafts have no link until they're published", () => {
   }
 });
 
-test("devrel shows its flagship projects and videos instead of a workshop; the others keep theirs", () => {
-  const f = flagshipFor("devrel");
-  assert.ok(f && f.length >= 2 && f.length <= 3 && f.every((c) => c.type === "product"));
-  assert.ok(f.some((c) => c.type === "product" && c.item.id === "kyabola"), "kya bola is a flagship");
+test("devrel and fde lead with flagship projects instead of a workshop; home keeps its workshop", () => {
+  const d = flagshipFor("devrel");
+  assert.ok(d && d.length >= 2 && d.length <= 3 && d.every((c) => c.type === "product"));
+  assert.ok(d.some((c) => c.type === "product" && c.item.id === "kyabola"), "kya bola is a devrel flagship");
   assert.equal(flagshipFor("home"), null);
-  assert.equal(flagshipFor("fde"), null);
-  assert.ok(workshopFor("home").length > 0 && workshopFor("fde").length > 0);
+  assert.ok(workshopFor("home").length > 0);
+});
+
+test("fde: in production first, then fixes landed in other teams' repos, AI demos only", () => {
+  const f = flagshipFor("fde");
+  assert.ok(f && f.length === 3);
+  assert.deepEqual(f.map((c) => (c.type === "product" ? c.item.id : c.type)), ["asktota", "kyabola", "docsparity"]);
+  const fixes = fixesFor("fde");
+  assert.ok(fixes.length >= 2 && fixes.every((c) => c.type === "diff"));
+  assert.ok(videosFor("fde").length > 0 && videosFor("fde").every((v) => v.topic === "ai"));
+  assert.equal(fixesFor("devrel").length, 0);
+  assert.equal(videosFor("home").length, 0);
 });
 
 test("videos: real YouTube ids, newest first among AI ones, Web3 never first, thumbnails on disk", async () => {

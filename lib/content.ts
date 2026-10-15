@@ -48,7 +48,17 @@ export interface Site {
    * Instead of the workshop: two flagship projects, then videos, then writing (and the game,
    * if `game` is on). Used on the devrel page, where the work is the content.
    */
-  showcase?: { flagship: string[] };
+  showcase?: {
+    /** Heading over the flagship cards. */
+    title: string;
+    flagship: string[];
+    /** Fixes landed in other teams' repos, shown as diffs under "in their repo". */
+    fixes?: string[];
+    /** Which videos: all of them, or only the AI ones. */
+    videos: "all" | "ai";
+    /** Heading over the videos. */
+    videosTitle: string;
+  };
   /** The line under "work" on /work. */
   workLede: string;
   /** The one ask on the page. Home has none on purpose. */
@@ -144,7 +154,7 @@ export const SITES: Record<SiteId, Site> = {
       { label: "writing", text: "the agent that catches docs drift" },
     ],
     workshop: [],
-    showcase: { flagship: ["docsparity", "kyabola", "lcdoctor"] },
+    showcase: { title: "flagship", flagship: ["docsparity", "kyabola", "lcdoctor"], videos: "all", videosTitle: "videos" },
     workLede: "Fixes in other people's code, newest first. Every row opens the PR or issue.",
     ask: { text: "hiring for devrel? read the PRs first", href: "/work" },
     resume: true,
@@ -174,15 +184,22 @@ export const SITES: Record<SiteId, Site> = {
       { glyph: "bubble", label: "kya bola, voice AI", to: "kyabola" },
       { glyph: "neq", label: "docsParity", to: "docsparity" },
       { glyph: "prompt", label: "the empty stream", to: "sarvamsdk" },
-      { glyph: "cross", label: "lcdoctor", to: "lcdoctor" },
-      { glyph: "box", label: "shipped", to: "timeline" },
+      { glyph: "play", label: "demos", to: "videos" },
+      { glyph: "bug", label: "spot the drift", to: "drift" },
     ],
     currently: [
       { label: "building", text: "AskTota", href: ASKTOTA },
       { label: "last landed", text: PR.sarvamSdk.label, href: PR.sarvamSdk.href },
       { label: "benchmarking", text: "kya bola", href: "https://github.com/reetbatra/kya-bola" },
     ],
-    workshop: ["asktota", "kyabola", "docsparity", "sarvamsdk", "lcdoctor", "drift", "blunt", "musclemommy", "hookcatch"],
+    workshop: [],
+    showcase: {
+      title: "in production",
+      flagship: ["asktota", "kyabola", "docsparity"],
+      fixes: ["sarvamsdk", "cyberwave", "sarvamskills"],
+      videos: "ai",
+      videosTitle: "demos",
+    },
     workLede: "What I built, and the fixes I landed in other teams' repos. Each row links to the repo, the live app or the PR.",
     ask: { text: "hiring an FDE? start with the work", href: "/work" },
     resume: true,
@@ -287,10 +304,10 @@ export interface Post {
  * `npm run videos` because the CSP only allows images from this site.
  */
 export const CHANNEL = "https://www.youtube.com/@Reet-DevRel";
-export const VIDEOS: { id: string; title: string; date: string }[] = [
-  { id: "bPP6gLCDVkY", title: "Monetize your app in one command: an AI pricing agent with Dodo Payments", date: "2026-10-08" },
-  { id: "k3gnxuBfLUs", title: "Sarvam AI speech to text on 64 Indian languages", date: "2026-10-08" },
-  { id: "bhXRvlMl5sE", title: "Write Starknet contracts in TypeScript, no Cairo: Sasuke demo", date: "2026-09-29" },
+export const VIDEOS: { id: string; title: string; date: string; topic: "ai" | "protocols" }[] = [
+  { id: "bPP6gLCDVkY", title: "Monetize your app in one command: an AI pricing agent with Dodo Payments", date: "2026-10-08", topic: "ai" },
+  { id: "k3gnxuBfLUs", title: "Sarvam AI speech to text on 64 Indian languages", date: "2026-10-08", topic: "ai" },
+  { id: "bhXRvlMl5sE", title: "Write Starknet contracts in TypeScript, no Cairo: Sasuke demo", date: "2026-09-29", topic: "protocols" },
 ];
 
 /** Where the posts used to live. Every post now lives on this site under /writing. */
@@ -420,10 +437,21 @@ export function workshopFor(site: SiteId): Card[] {
   return SITES[site].workshop.map((id) => cardFor(site, id));
 }
 
-/** The devrel page's two flagship cards, or null on a page that has a workshop instead. */
+/** The flagship cards on a showcase page (devrel, fde), or null on a page with a workshop. */
 export function flagshipFor(site: SiteId): Card[] | null {
   const sc = SITES[site].showcase;
   return sc ? sc.flagship.map((id) => cardFor(site, id)) : null;
+}
+
+/** Fixes in other teams' repos, as diff cards, for a showcase page that lists them. */
+export function fixesFor(site: SiteId): Card[] {
+  return (SITES[site].showcase?.fixes ?? []).map((id) => cardFor(site, id));
+}
+
+export function videosFor(site: SiteId): typeof VIDEOS {
+  const which = SITES[site].showcase?.videos;
+  if (!which) return [];
+  return which === "ai" ? VIDEOS.filter((v) => v.topic === "ai") : VIDEOS;
 }
 
 /** Lowercase roman numerals for the contents page: 1 → i, 4 → iv, 12 → xii. */

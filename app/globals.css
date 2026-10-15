@@ -438,6 +438,9 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 28px 18px;
   }
+  .videos.two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .videos a {
     display: grid;
     gap: 8px;
@@ -1861,7 +1864,8 @@
     }
     .lab,
     .lab.cols-2,
-    .videos {
+    .videos,
+    .videos.two {
       grid-template-columns: 1fr;
     }
     .card.drift {
