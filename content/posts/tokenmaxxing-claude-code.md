@@ -13,7 +13,7 @@ Here's what that looked like for me, and the setup that made it possible.
 
 ## The night
 
-A little after 2:30 am I typed one paragraph into Claude Code. I listed six portfolio sites I like and told it my current site looked copied from someone else's, and that I wanted a mix of all of them. Then I added the line that mattered: "if there is any question to me, work without me, and I need you to finish my portfolio design and build it end to end."
+A little after 2:30 am I typed one paragraph into Claude Code. I listed six portfolio sites I like and told it my current site looked copied from someone else's, and that I wanted a mix of all of them. Then I added the line that mattered: "If you have a question, don't wait for me. Work it out, and finish the portfolio end to end."
 
 Then I went to sleep.
 

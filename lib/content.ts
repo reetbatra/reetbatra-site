@@ -198,6 +198,7 @@ export const DIFFS: { id: string; title: string; before: string; after: string; 
 
 /** Notes: what was on my mind, newest first. Each line is dated to the day the thing happened. */
 export const MIND: { date: string; text: string; href?: string }[] = [
+  { date: "15 oct", text: "tokenmaxxing claude code: a goal at 2:30 am, a new portfolio by morning", href: "/writing/tokenmaxxing-claude-code" },
   { date: "14 oct", text: "your docs platform wrote your llms.txt. fix it in 30 minutes", href: "/writing/your-docs-platform-wrote-your-llms-txt" },
   { date: "10 oct", text: "a fact-check CI that only reads the lines a PR changed", href: "https://github.com/zcashlabs/zcash-skills/pull/4" },
   { date: "09 oct", text: "llms.txt is the new README, and most docs sites don't ship one", href: "https://github.com/openvm-org/openvm/issues/3166" },
